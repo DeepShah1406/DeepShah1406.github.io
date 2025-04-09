@@ -1,5 +1,7 @@
 # DeepShah1406.github.io
+
 My GitHub Website
+
 <h1 align="center">
   <a href="https://git.io/typing-svg">
     <img src="https://readme-typing-svg.herokuapp.com/?lines=Hello,+There!+👋🏻;This+is+Deep+Shah....;Nice+to+meet+you!&center=true&size=30">
@@ -17,10 +19,11 @@ My GitHub Website
 <img align="right" alt="GIF" src="https://github.com/DeepShah1406/DeepShah1406/blob/main/language_and_tools_images/GitHub_Animation.gif" width="360px"/>
 
 ### 😁 More About Me:
+
 - 👋🏻 &nbsp; Hi, I'm Deep Shah.
 - 🎓 &nbsp; I’m currently pursuing a Master’s in Information Technology.
 - 🎓 &nbsp; I completed my Graduation with a Bachelor of Science in Chemistry.
-- 📚 &nbsp; I have started reading Artificial Intelligence with Python by Prateek Joshi and Digital Image Processing by Rafael G. Gonzalez and Richard E. Woods.
+- 📚 &nbsp; I am reading Artificial Intelligence with Python by Prateek Joshi and Digital Image Processing by Rafael G. Gonzalez and Richard E. Woods.
 - 🎨 &nbsp; Using [this svg](https://storyset.com/illustration/programming/amico) and Figma I made 👉
 - 💬 &nbsp; Ask me about anything Tech related, I am happy to discuss and help.
 - 📫 &nbsp; Feel free to ping me on [LinkedIn](https://www.linkedin.com/in/deepshah1406/).
