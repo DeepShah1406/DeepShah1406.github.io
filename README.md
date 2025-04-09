@@ -16,7 +16,7 @@ My GitHub Website
 <br>
 <br>
 
-<img align="right" alt="GIF" src="https://github.com/DeepShah1406/DeepShah1406/blob/main/language_and_tools_images/GitHub_Animation.gif" width="360px"/>
+<img align="right" alt="GIF I created using a SVG" src="https://github.com/DeepShah1406/DeepShah1406/blob/main/language_and_tools_images/GitHub_Animation.gif" width="360px"/>
 
 ### 😁 More About Me:
 
