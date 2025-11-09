@@ -26,6 +26,46 @@
     font-size: 14px;
     position: relative;
     left: 0;
+    animation: glitch 4s infinite;
+}
+
+@keyframes glitch {
+    0% {
+        transform: translate(0);
+        opacity: 1;
+    }
+    1% {
+        transform: translate(-2px, 1px);
+        opacity: 0.9;
+    }
+    2% {
+        transform: translate(2px, -1px);
+        opacity: 0.8;
+    }
+    3% {
+        transform: translate(0);
+        opacity: 1;
+    }
+    20% {
+        transform: translate(0);
+        opacity: 1;
+    }
+    21% {
+        transform: translate(3px, 1px);
+        opacity: 0.9;
+    }
+    22% {
+        transform: translate(-3px, -1px);
+        opacity: 0.8;
+    }
+    23% {
+        transform: translate(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(0);
+        opacity: 1;
+    }
 }
 
 .warning-dot {
