@@ -1,0 +1,200 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-dark: #0a0a0a;
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0a0;
+    --accent-color: #ffffff;
+}
+
+body {
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: transparent;
+    padding: 1.5rem 0;
+    transition: background-color 0.3s ease;
+}
+
+.navbar.scrolled {
+    background-color: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.navbar-brand.logo {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--text-primary);
+    transition: opacity 0.3s ease;
+}
+
+.navbar-brand.logo:hover {
+    opacity: 0.7;
+    color: var(--text-primary);
+}
+
+.nav-link-custom {
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--text-primary) !important;
+    padding: 0.5rem 1rem !important;
+    transition: opacity 0.3s ease;
+}
+
+.nav-link-custom:hover {
+    opacity: 0.7;
+}
+
+/* Hero Section */
+.hero-section {
+    min-height: 100vh;
+    padding: 120px 20px 80px;
+    position: relative;
+}
+
+.hero-content {
+    max-width: 100%;
+}
+
+.hero-title {
+    font-size: clamp(2rem, 5vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+}
+
+.hero-subtitle {
+    font-size: clamp(1.5rem, 4vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    color: var(--text-secondary);
+}
+
+/* Word Animation Styles */
+.word {
+    display: inline-block;
+    margin: 0 0.3em;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Stagger animation delays */
+.word[data-delay="0"] { animation-delay: 0s; }
+.word[data-delay="100"] { animation-delay: 0.1s; }
+.word[data-delay="200"] { animation-delay: 0.2s; }
+.word[data-delay="300"] { animation-delay: 0.3s; }
+.word[data-delay="400"] { animation-delay: 0.4s; }
+.word[data-delay="500"] { animation-delay: 0.5s; }
+.word[data-delay="600"] { animation-delay: 0.6s; }
+.word[data-delay="700"] { animation-delay: 0.7s; }
+.word[data-delay="800"] { animation-delay: 0.8s; }
+.word[data-delay="900"] { animation-delay: 0.9s; }
+.word[data-delay="1000"] { animation-delay: 1s; }
+
+/* Footer Styles */
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 2rem 0;
+    background-color: transparent;
+    z-index: 10;
+}
+
+.footer-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    opacity: 0.5;
+    letter-spacing: 0.05em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar-brand.logo {
+        font-size: 0.9rem;
+    }
+
+    .nav-link-custom {
+        font-size: 0.85rem;
+        padding: 0.5rem 0 !important;
+    }
+
+    .hero-section {
+        padding: 100px 15px 60px;
+    }
+
+    .hero-title,
+    .hero-subtitle {
+        text-align: center;
+    }
+
+    .word {
+        margin: 0 0.2em;
+    }
+
+    .footer {
+        padding: 1.5rem 0;
+    }
+
+    .footer-text {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .word {
+        margin: 0 0.15em;
+    }
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Selection color */
+::selection {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
