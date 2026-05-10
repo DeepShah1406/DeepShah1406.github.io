@@ -93,7 +93,7 @@ export const GraphView: React.FC = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="w-full h-[400px] border border-obsidian-border rounded-lg bg-obsidian-sidebar/20 mt-12 relative overflow-hidden group">
+    <div ref={containerRef} className="w-full h-[300px] sm:h-[400px] border border-obsidian-border rounded-lg bg-obsidian-sidebar/20 mt-12 relative overflow-hidden group">
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-1">
         <div className="text-[10px] uppercase font-bold text-obsidian-text-muted/50 tracking-widest">Interactive 3D Vault</div>
         <div className="text-[9px] text-obsidian-text-muted/30 opacity-0 group-hover:opacity-100 transition-opacity">Drag to rotate • Scroll to zoom • Click to open</div>

@@ -84,7 +84,7 @@
   --text-muted: #888888;
   --callout-achievement: #008B8B;
   --callout-tech: #ffffff;
-  --graph-link: rgba(0, 139, 139, 0.6); /* High-visibility teal links */
+  --graph-link: rgba(0, 139, 139, 0.9); /* Fully vibrant teal links for OLED */
 }
 
 @layer base {

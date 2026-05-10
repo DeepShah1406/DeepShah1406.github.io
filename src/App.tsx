@@ -23,6 +23,7 @@ import companyRagContent from './vault/02-builds/Company_RAG_Chatbot.md?raw'
 import movieRecContent from './vault/02-builds/Movie_Rec_Chatbot.md?raw'
 import collegeRagContent from './vault/02-builds/College_RAG_Chatbot.md?raw'
 import n8nBusinessContent from './vault/02-builds/n8n_Business_Automations.md?raw'
+import underConstructionContent from './vault/02-builds/Under_Construction_Completed.md?raw'
 
 // 03 - Logs
 import experienceContent from './vault/03-logs/Experience_Log.md?raw'
@@ -135,6 +136,13 @@ function App() {
         content: n8nBusinessContent,
         folder: '02 - Builds',
         tags: ['#automation', '#n8n', '#efficiency']
+      },
+      'under_construction_completed': {
+        id: 'under_construction_completed',
+        title: 'Under Construction Completed',
+        content: underConstructionContent,
+        folder: '02 - Builds',
+        tags: ['#archive', '#legacy', '#history']
       },
       'experience_log': {
         id: 'experience_log',

@@ -14,6 +14,7 @@ export type NoteId =
   | 'movie_rec_chatbot'
   | 'college_rag_chatbot'
   | 'n8n_business_automations'
+  | 'under_construction_completed'
   | 'experience_log'
   | 'execution_logs'
   | 'impact_record'

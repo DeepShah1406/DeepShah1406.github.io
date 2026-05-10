@@ -1,5 +1,7 @@
 # Deep Shah
 
+![PROFILE](/Deep_Shah_Image.jpg)
+
 > [!ACHIEVEMENT]
 > **Deep Ashishkumar Shah**
 > AI/ML Engineer | GenAI & Automation Specialist

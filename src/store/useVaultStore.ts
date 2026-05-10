@@ -13,12 +13,14 @@ interface VaultState {
   isSidebarOpen: boolean;
   isRightPanelOpen: boolean;
   isFocusMode: boolean;
+  isCommandPaletteOpen: boolean;
   theme: string;
   notes: Record<string, Note>;
   setActiveNote: (id: string) => void;
   toggleSidebar: () => void;
   toggleRightPanel: () => void;
   toggleFocusMode: () => void;
+  setCommandPaletteOpen: (open: boolean) => void;
   setTheme: (theme: string) => void;
   setNotes: (notes: Record<string, Note>) => void;
 }
@@ -28,6 +30,7 @@ export const useVaultStore = create<VaultState>((set) => ({
   isSidebarOpen: true,
   isRightPanelOpen: true,
   isFocusMode: false,
+  isCommandPaletteOpen: false,
   theme: localStorage.getItem('vault-theme') || 'default',
   notes: {},
   setActiveNote: (id) => set({ activeNoteId: id }),
@@ -41,6 +44,7 @@ export const useVaultStore = create<VaultState>((set) => ({
       isRightPanelOpen: nextFocusMode ? false : true,
     };
   }),
+  setCommandPaletteOpen: (open) => set({ isCommandPaletteOpen: open }),
   setTheme: (theme) => {
     localStorage.setItem('vault-theme', theme);
     if (theme === 'default') {
