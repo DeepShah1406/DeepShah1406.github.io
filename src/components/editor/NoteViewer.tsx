@@ -6,6 +6,7 @@ import { Info, Award, Zap, AlertCircle, FileText } from 'lucide-react';
 import { useNotes, type NoteId } from '@/hooks/useNotes';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { Terminal } from '../ui/Terminal';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -64,7 +65,6 @@ export const NoteViewer: React.FC<NoteViewerProps> = ({ content }) => {
           // Custom blockquote for Callouts
           blockquote: ({ children }) => {
             const childrenArray = React.Children.toArray(children);
-            // react-markdown wraps content in a paragraph
             const firstChild = childrenArray[1] as any;
             const textContent = firstChild?.props?.children?.[0] || '';
             
@@ -76,7 +76,6 @@ export const NoteViewer: React.FC<NoteViewerProps> = ({ content }) => {
                     if (index === 1) {
                         const p = child as any;
                         const pChildren = React.Children.toArray(p.props.children);
-                        // Skip the first child which is the [!TYPE] marker
                         return React.cloneElement(p, {}, pChildren.slice(1));
                     }
                     return child;
@@ -90,7 +89,6 @@ export const NoteViewer: React.FC<NoteViewerProps> = ({ content }) => {
           a: ({ href, children }) => {
             if (href?.startsWith('#')) {
               const label = href.slice(1);
-              // Normalize label to ID: "GenAI RAG" -> "genai_rag"
               const id = label.toLowerCase().replace(/ /g, '_') as NoteId;
               
               return (
@@ -118,6 +116,10 @@ export const NoteViewer: React.FC<NoteViewerProps> = ({ content }) => {
           code({ className, children, ...props }) {
             const match = /language-(\w+)/.exec(className || '');
             const lang = match ? match[1] : '';
+            
+            if (lang === 'terminal') {
+                return <Terminal />;
+            }
             
             if (lang) {
                 return (
