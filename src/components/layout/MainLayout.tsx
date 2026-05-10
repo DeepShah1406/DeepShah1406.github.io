@@ -26,7 +26,7 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const NavItem = ({ icon: Icon, label, id }: { icon: any, label: string, id: NoteId }) => {
+const NavItem = ({ icon: Icon, label, id, isMain }: { icon: any, label: string, id: NoteId, isMain?: boolean }) => {
   const { activeNoteId, openNote } = useNotes();
   const isActive = activeNoteId === id;
 
@@ -34,12 +34,21 @@ const NavItem = ({ icon: Icon, label, id }: { icon: any, label: string, id: Note
     <div 
       onClick={() => openNote(id)}
       className={cn(
-        "flex items-center gap-2 px-3 py-1.5 cursor-pointer rounded-md transition-colors",
-        isActive ? "bg-obsidian-border text-obsidian-accent" : "hover:bg-obsidian-border/50 text-obsidian-text-muted"
+        "flex items-center gap-2 px-3 py-1.5 cursor-pointer rounded-md transition-all group",
+        isActive ? "bg-obsidian-border text-obsidian-accent shadow-sm" : "hover:bg-obsidian-border/50 text-obsidian-text-muted",
+        isMain && "py-3 my-1 border border-obsidian-accent/20 bg-obsidian-accent/5 hover:border-obsidian-accent/50"
       )}
     >
-      <Icon size={16} />
-      <span className="text-sm truncate">{label}</span>
+      <Icon size={isMain ? 20 : 16} className={cn(isMain && "text-obsidian-accent animate-pulse")} />
+      <span className={cn(
+        "truncate transition-all",
+        isMain ? "text-base font-bold tracking-tight text-obsidian-text group-hover:text-obsidian-accent" : "text-sm"
+      )}>
+        {label}
+      </span>
+      {isMain && (
+        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-obsidian-accent opacity-50" />
+      )}
     </div>
   );
 };
@@ -123,7 +132,7 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
 
       <div className="flex-1 overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-obsidian-border">
         <FolderSection title="00 - Identity">
-          <NavItem icon={Info} label="Deep_Shah.md" id="deep_shah" />
+          <NavItem icon={Info} label="Deep_Shah.md" id="deep_shah" isMain={true} />
           <NavItem icon={FileText} label="Resume_Snapshot.md" id="resume_snapshot" />
         </FolderSection>
 

@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import ForceGraph3D from 'react-force-graph-3d';
 import { useVaultStore } from '@/store/useVaultStore';
 import { useNotes, type NoteId } from '@/hooks/useNotes';
 import * as THREE from 'three';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 
 interface GraphNode {
   id: string;
@@ -25,7 +25,7 @@ export const GraphView: React.FC = () => {
   
   const { notes } = useVaultStore();
   const { activeNoteId, openNote } = useNotes();
-  const [colors, setColors] = useState({ accent: '#bd93f9', muted: '#6272a4', identity: '#008b8b' });
+  const [colors, setColors] = useState({ accent: '#bd93f9', muted: '#6272a4', identity: '#008b8b', link: 'rgba(255, 255, 255, 0.1)' });
 
   // Update dimensions on resize
   useEffect(() => {
@@ -45,7 +45,8 @@ export const GraphView: React.FC = () => {
     setColors({
       accent: style.getPropertyValue('--accent').trim() || '#bd93f9',
       muted: style.getPropertyValue('--text-muted').trim() || '#6272a4',
-      identity: '#008b8b'
+      identity: '#008b8b',
+      link: style.getPropertyValue('--graph-link').trim() || 'rgba(255, 255, 255, 0.1)'
     });
 
     return () => window.removeEventListener('resize', updateDimensions);
@@ -58,7 +59,7 @@ export const GraphView: React.FC = () => {
       return {
         id: n.id,
         name: isDeepShah ? 'Deep Shah' : n.title,
-        val: isDeepShah ? 12 : (n.id === activeNoteId ? 5 : 2), // Keep Deep Shah node largest
+        val: isDeepShah ? 12 : (n.id === activeNoteId ? 5 : 2),
         color: isDeepShah ? colors.identity : (n.id === activeNoteId ? colors.accent : colors.muted),
         isDeepShah
       };
@@ -73,7 +74,7 @@ export const GraphView: React.FC = () => {
       }
 
       noteList.forEach(otherNode => {
-        if (node.id !== otherNode.id && node.folder === otherNode.folder && node.id !== 'deep_shah' && otherNode.id !== 'deep_shah') {
+        if (node.id !== otherNode.id && node.folder === otherNode.folder && node.id !== 'deep_shah' && otherNode.id !== 'identity') {
             if (!links.some(l => (l.source === otherNode.id && l.target === node.id))) {
                 links.push({ source: node.id, target: otherNode.id });
             }
@@ -106,8 +107,8 @@ export const GraphView: React.FC = () => {
           graphData={graphData}
           backgroundColor="rgba(0,0,0,0)"
           nodeLabel="name"
-          linkColor={() => 'rgba(255, 255, 255, 0.1)'}
-          linkWidth={0.5}
+          linkColor={() => colors.link}
+          linkWidth={0.75}
           onNodeClick={(node: any) => openNote(node.id as NoteId)}
           onNodeHover={handleNodeHover}
           showNavInfo={false}
@@ -121,7 +122,7 @@ export const GraphView: React.FC = () => {
             
             // Base visual size
             let size = isDeepShah ? 4 : (isActive ? 2.5 : 1.5);
-            if (isHovered) size *= 1.4; // Responsive hover animation
+            if (isHovered) size *= 1.4;
 
             const group = new THREE.Group();
             

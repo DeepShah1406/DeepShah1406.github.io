@@ -12,6 +12,7 @@
   --text-muted: #a0a0a0;
   --callout-achievement: #50fa7b;
   --callout-tech: #8be9fd;
+  --graph-link: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme='dracula'] {
@@ -23,6 +24,7 @@
   --text-muted: #6272a4;
   --callout-achievement: #50fa7b;
   --callout-tech: #8be9fd;
+  --graph-link: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme='nord'] {
@@ -34,6 +36,7 @@
   --text-muted: #d8dee9;
   --callout-achievement: #a3be8c;
   --callout-tech: #81a1c1;
+  --graph-link: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme='solarized'] {
@@ -45,6 +48,7 @@
   --text-muted: #657b83;
   --callout-achievement: #859900;
   --callout-tech: #2aa198;
+  --graph-link: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme='everforest'] {
@@ -56,6 +60,7 @@
   --text-muted: #9da9a0;
   --callout-achievement: #a7c080;
   --callout-tech: #7fbbb3;
+  --graph-link: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme='paper'] {
@@ -67,17 +72,19 @@
   --text-muted: #666666;
   --callout-achievement: #10b981;
   --callout-tech: #06b6d4;
+  --graph-link: rgba(0, 0, 0, 0.15); /* Visible on light bg */
 }
 
 [data-theme='midnight'] {
   --bg-primary: #000000;
   --bg-secondary: #0a0a0a;
   --border: #222222;
-  --accent: #ffffff;
+  --accent: #008B8B; /* Dark Cyan for headings/labels as requested */
   --text-primary: #ffffff;
   --text-muted: #888888;
-  --callout-achievement: #ffffff;
+  --callout-achievement: #008B8B;
   --callout-tech: #ffffff;
+  --graph-link: rgba(255, 255, 255, 0.2); /* Brighter for OLED */
 }
 
 @layer base {
@@ -87,6 +94,15 @@
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold text-[var(--accent)];
+  }
+
+  /* Specific highlights for bold/italic in themes */
+  strong, b {
+    @apply text-[var(--accent)] font-bold;
+  }
+
+  em, i {
+    @apply text-[var(--accent)] italic;
   }
 }
 
