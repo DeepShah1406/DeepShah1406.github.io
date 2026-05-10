@@ -104,7 +104,7 @@ export const Terminal: React.FC = () => {
       {/* Terminal History */}
       <div 
         ref={scrollRef}
-        className="h-64 overflow-y-auto p-4 space-y-2 scrollbar-thin scrollbar-thumb-obsidian-border"
+        className="h-64 overflow-y-auto p-4 space-y-2"
       >
         {history.map((item, i) => (
           <div key={i} className="flex gap-2 text-sm leading-relaxed animate-in fade-in slide-in-from-left-2 duration-300">

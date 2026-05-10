@@ -100,7 +100,7 @@ export const CommandPalette = () => {
             className="flex h-12 w-full bg-transparent py-3 text-sm outline-none placeholder:text-obsidian-text-muted disabled:cursor-not-allowed disabled:opacity-50"
           />
         </div>
-        <Command.List className="max-h-[300px] overflow-y-auto overflow-x-hidden p-2 scrollbar-thin scrollbar-thumb-obsidian-border">
+        <Command.List className="max-h-[300px] overflow-y-auto overflow-x-hidden p-2">
           {filteredNotes.length === 0 && filteredActions.length === 0 && (
             <Command.Empty className="py-6 text-center text-sm text-obsidian-text-muted">No results found.</Command.Empty>
           )}

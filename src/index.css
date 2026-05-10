@@ -13,6 +13,8 @@
   --callout-achievement: #50fa7b;
   --callout-tech: #8be9fd;
   --graph-link: rgba(255, 255, 255, 0.1);
+  --sb-thumb: rgba(255, 255, 255, 0.1);
+  --sb-thumb-hover: rgba(189, 147, 249, 0.4);
 }
 
 [data-theme='dracula'] {
@@ -25,6 +27,8 @@
   --callout-achievement: #50fa7b;
   --callout-tech: #8be9fd;
   --graph-link: rgba(255, 255, 255, 0.1);
+  --sb-thumb: rgba(255, 255, 255, 0.1);
+  --sb-thumb-hover: rgba(255, 121, 198, 0.4);
 }
 
 [data-theme='nord'] {
@@ -37,6 +41,8 @@
   --callout-achievement: #a3be8c;
   --callout-tech: #81a1c1;
   --graph-link: rgba(255, 255, 255, 0.1);
+  --sb-thumb: rgba(255, 255, 255, 0.1);
+  --sb-thumb-hover: rgba(136, 192, 208, 0.4);
 }
 
 [data-theme='solarized'] {
@@ -49,6 +55,8 @@
   --callout-achievement: #859900;
   --callout-tech: #2aa198;
   --graph-link: rgba(255, 255, 255, 0.1);
+  --sb-thumb: rgba(255, 255, 255, 0.1);
+  --sb-thumb-hover: rgba(181, 137, 0, 0.4);
 }
 
 [data-theme='everforest'] {
@@ -61,6 +69,8 @@
   --callout-achievement: #a7c080;
   --callout-tech: #7fbbb3;
   --graph-link: rgba(255, 255, 255, 0.1);
+  --sb-thumb: rgba(255, 255, 255, 0.1);
+  --sb-thumb-hover: rgba(167, 192, 128, 0.4);
 }
 
 [data-theme='paper'] {
@@ -72,19 +82,23 @@
   --text-muted: #666666;
   --callout-achievement: #10b981;
   --callout-tech: #06b6d4;
-  --graph-link: rgba(0, 0, 0, 0.15); /* Visible on light bg */
+  --graph-link: rgba(0, 0, 0, 0.15);
+  --sb-thumb: rgba(0, 0, 0, 0.1);
+  --sb-thumb-hover: rgba(59, 130, 246, 0.3);
 }
 
 [data-theme='midnight'] {
   --bg-primary: #000000;
   --bg-secondary: #0a0a0a;
   --border: #222222;
-  --accent: #008B8B; /* Dark Cyan for headings/labels as requested */
+  --accent: #008B8B;
   --text-primary: #ffffff;
   --text-muted: #888888;
   --callout-achievement: #008B8B;
   --callout-tech: #ffffff;
-  --graph-link: rgba(0, 139, 139, 0.9); /* Fully vibrant teal links for OLED */
+  --graph-link: rgba(0, 139, 139, 0.9);
+  --sb-thumb: rgba(0, 139, 139, 0.2);
+  --sb-thumb-hover: rgba(0, 139, 139, 0.6);
 }
 
 @layer base {
@@ -96,7 +110,6 @@
     @apply font-semibold text-[var(--accent)];
   }
 
-  /* Specific highlights for bold/italic in themes */
   strong, b {
     @apply text-[var(--accent)] font-bold;
   }
@@ -106,18 +119,32 @@
   }
 }
 
-/* Custom Scrollbar */
+/* 
+ * Minimalist Professional Scrollbar
+ */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 5px;  /* Ultra thin */
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-[var(--bg-primary)];
+  background: transparent; /* Seamless track */
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-[var(--border)] rounded-full hover:bg-[var(--text-muted)];
+  background: var(--sb-thumb);
+  border-radius: 20px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sb-thumb-hover); /* Vibrant highlight on hover */
+}
+
+/* Firefox Support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-thumb) transparent;
 }
 
 .no-scrollbar::-webkit-scrollbar {

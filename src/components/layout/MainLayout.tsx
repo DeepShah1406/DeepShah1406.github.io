@@ -139,7 +139,7 @@ const SidebarContent = ({
       </div>
     </div>
 
-    <div className="flex-1 overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-obsidian-border overflow-x-hidden">
+    <div className="flex-1 overflow-y-auto p-2 overflow-x-hidden">
       <FolderSection title="00 - Identity">
         <NavItem icon={Info} label="Deep_Shah.md" id="deep_shah" isMain={true} />
         <NavItem icon={FileText} label="Resume_Snapshot.md" id="resume_snapshot" />
@@ -341,7 +341,7 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
         <TabBar />
 
         {/* Editor Area */}
-        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-obsidian-border p-3 sm:p-8">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-8">
           <div className="max-w-4xl mx-auto w-full">
             {children}
           </div>
