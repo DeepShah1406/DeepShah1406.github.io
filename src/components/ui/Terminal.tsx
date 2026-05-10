@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Terminal as TerminalIcon, Send, ChevronRight } from 'lucide-react';
+import { Terminal as TerminalIcon } from 'lucide-react';
 
 interface HistoryItem {
   type: 'command' | 'response';

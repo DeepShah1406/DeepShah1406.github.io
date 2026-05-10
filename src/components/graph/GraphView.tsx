@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import ForceGraph3D from 'react-force-graph-3d';
 import { useVaultStore } from '@/store/useVaultStore';
 import { useNotes, type NoteId } from '@/hooks/useNotes';
@@ -9,6 +9,7 @@ interface GraphNode {
   name: string;
   val: number;
   color?: string;
+  isIdentity?: boolean;
 }
 
 interface GraphLink {
@@ -18,10 +19,13 @@ interface GraphLink {
 
 export const GraphView: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const fgRef = useRef<any>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [hoverNode, setHoverNode] = useState<GraphNode | null>(null);
+  
   const { notes } = useVaultStore();
   const { activeNoteId, openNote } = useNotes();
-  const [colors, setColors] = useState({ accent: '#bd93f9', muted: '#6272a4', bg: '#1e1e1e' });
+  const [colors, setColors] = useState({ accent: '#bd93f9', muted: '#6272a4', identity: '#008b8b' });
 
   // Update dimensions on resize
   useEffect(() => {
@@ -42,7 +46,7 @@ export const GraphView: React.FC = () => {
     setColors({
       accent: style.getPropertyValue('--accent').trim() || '#bd93f9',
       muted: style.getPropertyValue('--text-muted').trim() || '#6272a4',
-      bg: style.getPropertyValue('--bg-primary').trim() || '#1e1e1e'
+      identity: '#008b8b'
     });
 
     return () => window.removeEventListener('resize', updateDimensions);
@@ -50,26 +54,27 @@ export const GraphView: React.FC = () => {
 
   // Prepare graph data
   const graphData = useMemo(() => {
-    const nodes: GraphNode[] = Object.values(notes).map(n => ({
-      id: n.id,
-      name: n.title,
-      val: n.id === 'identity' ? 5 : 2,
-      color: n.id === activeNoteId ? colors.accent : colors.muted
-    }));
+    const nodes: GraphNode[] = Object.values(notes).map(n => {
+      const isIdentity = n.id === 'identity';
+      return {
+        id: n.id,
+        name: isIdentity ? 'Deep Shah' : n.title,
+        val: isIdentity ? 8 : (n.id === activeNoteId ? 4 : 2),
+        color: isIdentity ? colors.identity : (n.id === activeNoteId ? colors.accent : colors.muted),
+        isIdentity
+      };
+    });
 
     const links: GraphLink[] = [];
     const noteList = Object.values(notes);
 
     noteList.forEach(node => {
-      // 1. Link everything to identity
       if (node.id !== 'identity') {
         links.push({ source: 'identity', target: node.id });
       }
 
-      // 2. Link notes in the same folder
       noteList.forEach(otherNode => {
         if (node.id !== otherNode.id && node.folder === otherNode.folder && node.id !== 'identity' && otherNode.id !== 'identity') {
-            // Avoid double links
             if (!links.some(l => (l.source === otherNode.id && l.target === node.id))) {
                 links.push({ source: node.id, target: otherNode.id });
             }
@@ -80,6 +85,13 @@ export const GraphView: React.FC = () => {
     return { nodes, links };
   }, [notes, activeNoteId, colors]);
 
+  const handleNodeHover = useCallback((node: any) => {
+    setHoverNode(node);
+    if (containerRef.current) {
+      containerRef.current.style.cursor = node ? 'pointer' : 'default';
+    }
+  }, []);
+
   return (
     <div ref={containerRef} className="w-full h-[400px] border border-obsidian-border rounded-lg bg-obsidian-sidebar/20 mt-12 relative overflow-hidden group">
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-1">
@@ -89,31 +101,35 @@ export const GraphView: React.FC = () => {
       
       {dimensions.width > 0 && (
         <ForceGraph3D
+          ref={fgRef}
           width={dimensions.width}
           height={dimensions.height}
           graphData={graphData}
           backgroundColor="rgba(0,0,0,0)"
           nodeLabel="name"
-          nodeColor="color"
           linkColor={() => 'rgba(255, 255, 255, 0.1)'}
           linkWidth={0.5}
           onNodeClick={(node: any) => openNote(node.id as NoteId)}
+          onNodeHover={handleNodeHover}
           showNavInfo={false}
           enableNodeDrag={true}
-          nodeRelSize={4}
-          onNodeHover={(node: any) => {
-              if (containerRef.current) {
-                  containerRef.current.style.cursor = node ? 'pointer' : 'default';
-              }
-          }}
-          // Customize node appearance
+          nodeRelSize={1}
+          
           nodeThreeObject={(node: any) => {
+            const isHovered = hoverNode?.id === node.id;
+            const isActive = node.id === activeNoteId;
+            const isIdentity = node.isIdentity;
+            
+            // Base size calculation
+            let size = isIdentity ? 3 : (isActive ? 2 : 1.2);
+            if (isHovered) size *= 1.3; // Scale up on hover
+
             const group = new THREE.Group();
             
-            // Create sphere
-            const geometry = new THREE.SphereGeometry(node.id === activeNoteId ? 1.5 : 1);
+            // Sphere Geometry
+            const geometry = new THREE.SphereGeometry(size);
             const material = new THREE.MeshPhongMaterial({ 
-                color: node.id === activeNoteId ? colors.accent : colors.muted,
+                color: node.color,
                 transparent: true,
                 opacity: 0.9,
                 shininess: 100
@@ -121,13 +137,14 @@ export const GraphView: React.FC = () => {
             const sphere = new THREE.Mesh(geometry, material);
             group.add(sphere);
 
-            // Add glow for active node
-            if (node.id === activeNoteId) {
-                const glowGeom = new THREE.SphereGeometry(2);
+            // Glow Effect
+            if (isActive || isIdentity || isHovered) {
+                const glowSize = size * 1.5;
+                const glowGeom = new THREE.SphereGeometry(glowSize);
                 const glowMat = new THREE.MeshBasicMaterial({ 
-                    color: colors.accent, 
+                    color: node.color, 
                     transparent: true, 
-                    opacity: 0.2 
+                    opacity: isHovered ? 0.3 : 0.15 
                 });
                 group.add(new THREE.Mesh(glowGeom, glowMat));
             }
