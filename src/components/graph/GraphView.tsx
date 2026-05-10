@@ -23,11 +23,11 @@ export const GraphView: React.FC = () => {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [hoverNode, setHoverNode] = useState<GraphNode | null>(null);
   
-  const { notes } = useVaultStore();
+  const { notes, theme } = useVaultStore();
   const { activeNoteId, openNote } = useNotes();
   const [colors, setColors] = useState({ accent: '#bd93f9', muted: '#6272a4', identity: '#008b8b', link: 'rgba(255, 255, 255, 0.1)' });
 
-  // Update dimensions on resize
+  // Update dimensions and colors on resize/theme change
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
@@ -50,7 +50,7 @@ export const GraphView: React.FC = () => {
     });
 
     return () => window.removeEventListener('resize', updateDimensions);
-  }, []);
+  }, [theme]);
 
   // Prepare graph data
   const graphData = useMemo(() => {

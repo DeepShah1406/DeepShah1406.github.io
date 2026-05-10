@@ -36,7 +36,7 @@ const NavItem = ({ icon: Icon, label, id, isMain }: { icon: any, label: string, 
       className={cn(
         "flex items-center gap-2 px-3 py-1.5 cursor-pointer rounded-md transition-all group",
         isActive ? "bg-obsidian-border text-obsidian-accent shadow-sm" : "hover:bg-obsidian-border/50 text-obsidian-text-muted",
-        isMain && "py-3 my-1 border border-obsidian-accent/20 bg-obsidian-accent/5 hover:border-obsidian-accent/50"
+        isMain && "py-3 my-1 bg-obsidian-accent/5 hover:bg-obsidian-accent/10"
       )}
     >
       <Icon size={isMain ? 20 : 16} className={cn(isMain && "text-obsidian-accent animate-pulse")} />
@@ -46,9 +46,6 @@ const NavItem = ({ icon: Icon, label, id, isMain }: { icon: any, label: string, 
       )}>
         {label}
       </span>
-      {isMain && (
-        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-obsidian-accent opacity-50" />
-      )}
     </div>
   );
 };
