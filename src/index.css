@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Obsidian (Default) */
+  --bg-primary: #1e1e1e;
+  --bg-secondary: #161616;
+  --border: #303030;
+  --accent: #bd93f9; /* Dracula Purple as default accent */
+  --text-primary: #dcddde;
+  --text-muted: #a0a0a0;
+  --callout-achievement: #50fa7b;
+  --callout-tech: #8be9fd;
+}
+
+[data-theme='dracula'] {
+  --bg-primary: #282a36;
+  --bg-secondary: #1e1f29;
+  --border: #44475a;
+  --accent: #ff79c6;
+  --text-primary: #f8f8f2;
+  --text-muted: #6272a4;
+  --callout-achievement: #50fa7b;
+  --callout-tech: #8be9fd;
+}
+
+[data-theme='nord'] {
+  --bg-primary: #2e3440;
+  --bg-secondary: #242933;
+  --border: #434c5e;
+  --accent: #88c0d0;
+  --text-primary: #eceff4;
+  --text-muted: #d8dee9;
+  --callout-achievement: #a3be8c;
+  --callout-tech: #81a1c1;
+}
+
+[data-theme='solarized'] {
+  --bg-primary: #002b36;
+  --bg-secondary: #073642;
+  --border: #586e75;
+  --accent: #b58900;
+  --text-primary: #839496;
+  --text-muted: #657b83;
+  --callout-achievement: #859900;
+  --callout-tech: #2aa198;
+}
+
+[data-theme='everforest'] {
+  --bg-primary: #2b3339;
+  --bg-secondary: #232a2e;
+  --border: #3a454a;
+  --accent: #a7c080;
+  --text-primary: #d3c6aa;
+  --text-muted: #9da9a0;
+  --callout-achievement: #a7c080;
+  --callout-tech: #7fbbb3;
+}
+
+[data-theme='paper'] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --border: #e0e0e0;
+  --accent: #3b82f6;
+  --text-primary: #1a1a1a;
+  --text-muted: #666666;
+  --callout-achievement: #10b981;
+  --callout-tech: #06b6d4;
+}
+
+[data-theme='midnight'] {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --border: #222222;
+  --accent: #ffffff;
+  --text-primary: #ffffff;
+  --text-muted: #888888;
+  --callout-achievement: #ffffff;
+  --callout-tech: #ffffff;
+}
+
+@layer base {
+  body {
+    @apply bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-300;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-[var(--accent)];
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-[var(--bg-primary)];
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-[var(--border)] rounded-full hover:bg-[var(--text-muted)];
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
