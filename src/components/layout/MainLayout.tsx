@@ -123,7 +123,7 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
 
       <div className="flex-1 overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-obsidian-border">
         <FolderSection title="00 - Identity">
-          <NavItem icon={Info} label="Identity.md" id="identity" />
+          <NavItem icon={Info} label="Deep_Shah.md" id="deep_shah" />
           <NavItem icon={FileText} label="Resume_Snapshot.md" id="resume_snapshot" />
         </FolderSection>
 
@@ -224,6 +224,7 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
 
   return (
     <div className="flex h-full w-full bg-obsidian-bg text-obsidian-text overflow-hidden font-sans relative">
+      {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
         {isMobile && isSidebarOpen && (
           <motion.div 
@@ -236,10 +237,11 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
         )}
       </AnimatePresence>
 
+      {/* Left Sidebar (250px) - DISABLED COLLAPSE ON DESKTOP */}
       <motion.aside 
         initial={false}
         animate={{ 
-          width: isSidebarOpen ? 250 : 0,
+          width: isMobile ? (isSidebarOpen ? 250 : 0) : 250,
           x: isMobile && !isSidebarOpen ? -250 : 0
         }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
@@ -251,16 +253,21 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
         <SidebarContent />
       </motion.aside>
 
+      {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 h-full relative">
+        {/* Toolbar */}
         <header className="h-10 border-b border-obsidian-border flex items-center justify-between px-4 bg-obsidian-bg/50 backdrop-blur-sm z-10 shrink-0">
           <div className="flex items-center gap-2">
-            <button 
-              onClick={toggleSidebar} 
-              className="p-1 hover:bg-obsidian-border rounded transition-colors"
-              aria-label="Toggle Left Sidebar"
-            >
-              <Menu size={16} className={cn(!isSidebarOpen && "text-obsidian-accent")} />
-            </button>
+            {/* Show menu button ONLY on mobile or if collapse is needed elsewhere */}
+            {isMobile && (
+                <button 
+                onClick={toggleSidebar} 
+                className="p-1 hover:bg-obsidian-border rounded transition-colors"
+                aria-label="Toggle Left Sidebar"
+                >
+                <Menu size={16} className={cn(!isSidebarOpen && "text-obsidian-accent")} />
+                </button>
+            )}
             <div className="text-xs text-obsidian-text-muted flex items-center gap-1 overflow-hidden">
               <span className="hidden sm:inline">vault</span>
               <ChevronRight size={10} className="hidden sm:inline" />
@@ -280,8 +287,10 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
           </div>
         </header>
 
+        {/* Tab Bar */}
         <TabBar />
 
+        {/* Editor Area */}
         <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-obsidian-border p-4 sm:p-8">
           <div className="max-w-4xl mx-auto w-full">
             {children}
@@ -289,6 +298,7 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
         </div>
       </main>
 
+      {/* Right Sidebar (300px) */}
       <motion.aside 
         initial={false}
         animate={{ 
@@ -304,6 +314,7 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
         <MetadataContent />
       </motion.aside>
 
+      {/* Mobile Right Panel Overlay */}
       <AnimatePresence>
         {isMobile && isRightPanelOpen && (
           <motion.div 

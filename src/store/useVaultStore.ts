@@ -24,7 +24,7 @@ interface VaultState {
 }
 
 export const useVaultStore = create<VaultState>((set) => ({
-  activeNoteId: 'identity',
+  activeNoteId: 'deep_shah',
   isSidebarOpen: true,
   isRightPanelOpen: true,
   isFocusMode: false,

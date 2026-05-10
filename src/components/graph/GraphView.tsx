@@ -9,7 +9,7 @@ interface GraphNode {
   name: string;
   val: number;
   color?: string;
-  isIdentity?: boolean;
+  isDeepShah?: boolean;
 }
 
 interface GraphLink {
@@ -41,7 +41,6 @@ export const GraphView: React.FC = () => {
     updateDimensions();
     window.addEventListener('resize', updateDimensions);
 
-    // Extract colors from CSS variables
     const style = getComputedStyle(document.documentElement);
     setColors({
       accent: style.getPropertyValue('--accent').trim() || '#bd93f9',
@@ -55,13 +54,13 @@ export const GraphView: React.FC = () => {
   // Prepare graph data
   const graphData = useMemo(() => {
     const nodes: GraphNode[] = Object.values(notes).map(n => {
-      const isIdentity = n.id === 'identity';
+      const isDeepShah = n.id === 'deep_shah';
       return {
         id: n.id,
-        name: isIdentity ? 'Deep Shah' : n.title,
-        val: isIdentity ? 8 : (n.id === activeNoteId ? 4 : 2),
-        color: isIdentity ? colors.identity : (n.id === activeNoteId ? colors.accent : colors.muted),
-        isIdentity
+        name: isDeepShah ? 'Deep Shah' : n.title,
+        val: isDeepShah ? 12 : (n.id === activeNoteId ? 5 : 2), // Keep Deep Shah node largest
+        color: isDeepShah ? colors.identity : (n.id === activeNoteId ? colors.accent : colors.muted),
+        isDeepShah
       };
     });
 
@@ -69,12 +68,12 @@ export const GraphView: React.FC = () => {
     const noteList = Object.values(notes);
 
     noteList.forEach(node => {
-      if (node.id !== 'identity') {
-        links.push({ source: 'identity', target: node.id });
+      if (node.id !== 'deep_shah') {
+        links.push({ source: 'deep_shah', target: node.id });
       }
 
       noteList.forEach(otherNode => {
-        if (node.id !== otherNode.id && node.folder === otherNode.folder && node.id !== 'identity' && otherNode.id !== 'identity') {
+        if (node.id !== otherNode.id && node.folder === otherNode.folder && node.id !== 'deep_shah' && otherNode.id !== 'deep_shah') {
             if (!links.some(l => (l.source === otherNode.id && l.target === node.id))) {
                 links.push({ source: node.id, target: otherNode.id });
             }
@@ -118,15 +117,14 @@ export const GraphView: React.FC = () => {
           nodeThreeObject={(node: any) => {
             const isHovered = hoverNode?.id === node.id;
             const isActive = node.id === activeNoteId;
-            const isIdentity = node.isIdentity;
+            const isDeepShah = node.isDeepShah;
             
-            // Base size calculation
-            let size = isIdentity ? 3 : (isActive ? 2 : 1.2);
-            if (isHovered) size *= 1.3; // Scale up on hover
+            // Base visual size
+            let size = isDeepShah ? 4 : (isActive ? 2.5 : 1.5);
+            if (isHovered) size *= 1.4; // Responsive hover animation
 
             const group = new THREE.Group();
             
-            // Sphere Geometry
             const geometry = new THREE.SphereGeometry(size);
             const material = new THREE.MeshPhongMaterial({ 
                 color: node.color,
@@ -137,14 +135,13 @@ export const GraphView: React.FC = () => {
             const sphere = new THREE.Mesh(geometry, material);
             group.add(sphere);
 
-            // Glow Effect
-            if (isActive || isIdentity || isHovered) {
-                const glowSize = size * 1.5;
+            if (isActive || isDeepShah || isHovered) {
+                const glowSize = size * 1.6;
                 const glowGeom = new THREE.SphereGeometry(glowSize);
                 const glowMat = new THREE.MeshBasicMaterial({ 
                     color: node.color, 
                     transparent: true, 
-                    opacity: isHovered ? 0.3 : 0.15 
+                    opacity: isHovered ? 0.35 : 0.18 
                 });
                 group.add(new THREE.Mesh(glowGeom, glowMat));
             }

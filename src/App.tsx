@@ -6,7 +6,7 @@ import { useVaultStore } from './store/useVaultStore'
 import { useNotes } from './hooks/useNotes'
 
 // 00 - Identity
-import identityContent from './vault/00-identity/Identity.md?raw'
+import deepShahContent from './vault/00-identity/Deep_Shah.md?raw'
 import resumeSnapshotContent from './vault/00-identity/Resume_Snapshot.md?raw'
 
 // 01 - Skills
@@ -45,10 +45,10 @@ function App() {
     }
 
     setNotes({
-      'identity': {
-        id: 'identity',
-        title: 'Identity',
-        content: identityContent,
+      'deep_shah': {
+        id: 'deep_shah',
+        title: 'Deep Shah',
+        content: deepShahContent,
         folder: '00 - Identity',
         tags: ['#ai', '#ml', '#automation']
       },
