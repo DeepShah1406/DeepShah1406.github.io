@@ -1,73 +1,89 @@
-# React + TypeScript + Vite
+# Obsidian Portfolio: Digital Brain 🧠
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A high-performance, Obsidian-inspired personal vault and portfolio built with React, TypeScript, and Tailwind CSS. This project serves as a "Second Brain" to showcase AI/ML expertise, automation builds, and technical field notes.
 
-Currently, two official plugins are available:
+## 🚀 Architectural Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### System Flow
+```mermaid
+graph TD
+    User((Visitor)) --> UI[React Shell]
+    UI --> Store[Zustand Store]
+    Store --> Vault[Markdown Vault]
+    Store --> Tabs[Tab Management]
+    UI --> Graph[D3.js Graph View]
+    UI --> Palette[Command Palette Ctrl+K]
+    UI --> Theme[Multi-Theme System]
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Component Hierarchy
+```mermaid
+graph BT
+    App --> Shell[VaultShell]
+    Shell --> Layout[MainLayout]
+    Layout --> Sidebar[Left Sidebar: Tree]
+    Layout --> Editor[Main Editor: NoteViewer]
+    Layout --> Meta[Right Sidebar: Metadata]
+    Editor --> GFM[Markdown + GFM]
+    Editor --> HL[Syntax Highlighting]
+    Editor --> Callouts[Obsidian Callouts]
 ```
+
+## 📂 Project Structure
+```text
+src/
+├── components/          # UI Components
+│   ├── layout/          # Main Shell & Layout
+│   ├── editor/          # Markdown Rendering Engine
+│   ├── graph/           # D3.js Visualization
+│   └── ui/              # Command Palette & Switchers
+├── hooks/               # Custom Hooks (useNotes, etc.)
+├── store/               # Zustand State Management
+├── vault/               # The Content (.md files)
+│   ├── 00-identity/     # About & Resume
+│   ├── 01-skills/       # Technical Stack
+│   ├── 02-builds/       # Project Case Studies
+│   └── ...
+└── types/               # TypeScript Definitions
+```
+
+## 🛠 Branching Strategy (GitFlow Variant)
+- **`main`**: Production-ready code. Stable releases.
+- **`dev`**: Main integration branch for development.
+- **`feature/*`**: Isolated development for specific features (e.g., `feature/ui-shell`).
+- **`experiment/*`**: Disposable branches for UI/UX testing and design iterations.
+
+## ✍️ Commit Convention
+We follow **Conventional Commits**:
+- `feat`: A new feature
+- `fix`: A bug fix
+- `chore`: Maintenance tasks (build config, dependencies)
+- `docs`: Documentation changes
+- `style`: Formatting, missing semi colons, etc; no code change
+- `refactor`: Refactoring production code
+
+*Example:* `feat(palette): add fuzzy search for vault nodes`
+
+## 🧪 Development & Testing
+```bash
+# Install dependencies
+npm install
+
+# Start local dev server
+npm run dev
+
+# Verify build & types
+npm run build
+```
+
+## 🎨 Design Experimentation
+To experiment with UI changes without cluttering history:
+1. Create an `experiment/` branch: `git checkout -b experiment/new-sidebar-style`
+2. Squash commits when merging back to `dev` to keep history lean.
+3. Use the **Theme System** (`src/index.css`) to test global color shifts.
+
+## ✨ Future Roadmap
+- [ ] Interactive 3D Graph View
+- [ ] Fuzzy search integration in Command Palette
+- [ ] Real-time terminal simulation for `Contact_Node`
+- [ ] PDF generation for project case studies
