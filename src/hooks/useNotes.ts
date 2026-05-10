@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 export type NoteId = 
-  | 'identity'
+  | 'deep_shah'
   | 'resume_snapshot'
   | 'python'
   | 'genai_rag'
@@ -14,6 +14,7 @@ export type NoteId =
   | 'movie_rec_chatbot'
   | 'college_rag_chatbot'
   | 'n8n_business_automations'
+  | 'under_construction_completed'
   | 'experience_log'
   | 'execution_logs'
   | 'impact_record'
@@ -29,8 +30,8 @@ interface NotesState {
 }
 
 export const useNotes = create<NotesState>((set) => ({
-  openTabs: ['identity'],
-  activeNoteId: 'identity',
+  openTabs: ['deep_shah'],
+  activeNoteId: 'deep_shah',
 
   openNote: (id) => set((state) => {
     const isTabOpen = state.openTabs.includes(id);

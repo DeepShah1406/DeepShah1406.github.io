@@ -83,7 +83,7 @@ To experiment with UI changes without cluttering history:
 3. Use the **Theme System** (`src/index.css`) to test global color shifts.
 
 ## ✨ Future Roadmap
-- [ ] Interactive 3D Graph View
-- [ ] Fuzzy search integration in Command Palette
-- [ ] Real-time terminal simulation for `Contact_Node`
+- [x] Interactive 3D Graph View
+- [x] Fuzzy search integration in Command Palette
+- [x] Real-time terminal simulation for `Contact_Node`
 - [ ] PDF generation for project case studies

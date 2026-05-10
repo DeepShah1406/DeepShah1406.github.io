@@ -6,6 +6,7 @@ import { Info, Award, Zap, AlertCircle, FileText } from 'lucide-react';
 import { useNotes, type NoteId } from '@/hooks/useNotes';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { Terminal } from '../ui/Terminal';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -46,10 +47,10 @@ export const NoteViewer: React.FC<NoteViewerProps> = ({ content }) => {
   const processedContent = content.replace(/\[\[(.*?)\]\]/g, '[$1](#$1)');
 
   return (
-    <div className="prose prose-invert max-w-none 
+    <div className="prose prose-sm sm:prose-base prose-invert max-w-none 
       prose-headings:text-dracula-purple 
-      prose-h1:text-4xl prose-h1:font-bold prose-h1:mb-8
-      prose-h2:text-2xl prose-h2:font-semibold prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-b prose-h2:border-obsidian-border prose-h2:pb-2
+      prose-h1:text-3xl sm:prose-h1:text-4xl prose-h1:font-bold prose-h1:mb-8
+      prose-h2:text-xl sm:prose-h2:text-2xl prose-h2:font-semibold prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-b prose-h2:border-obsidian-border prose-h2:pb-2
       prose-p:text-obsidian-text prose-p:leading-relaxed prose-p:mb-4
       prose-li:text-obsidian-text-muted prose-li:my-1
       prose-strong:text-dracula-pink prose-strong:font-bold
@@ -64,7 +65,6 @@ export const NoteViewer: React.FC<NoteViewerProps> = ({ content }) => {
           // Custom blockquote for Callouts
           blockquote: ({ children }) => {
             const childrenArray = React.Children.toArray(children);
-            // react-markdown wraps content in a paragraph
             const firstChild = childrenArray[1] as any;
             const textContent = firstChild?.props?.children?.[0] || '';
             
@@ -76,7 +76,6 @@ export const NoteViewer: React.FC<NoteViewerProps> = ({ content }) => {
                     if (index === 1) {
                         const p = child as any;
                         const pChildren = React.Children.toArray(p.props.children);
-                        // Skip the first child which is the [!TYPE] marker
                         return React.cloneElement(p, {}, pChildren.slice(1));
                     }
                     return child;
@@ -86,11 +85,27 @@ export const NoteViewer: React.FC<NoteViewerProps> = ({ content }) => {
             }
             return <blockquote className="border-l-4 border-dracula-comment pl-4 italic my-4 text-dracula-comment">{children}</blockquote>;
           },
+          // Custom image renderer
+          img: ({ src, alt, ...props }) => {
+            if (alt === 'PROFILE') {
+              return (
+                <div className="float-none sm:float-right mx-auto sm:ml-8 mb-8 sm:mb-4 group relative w-max">
+                  <img 
+                    src={src} 
+                    alt={alt}
+                    className="w-32 sm:w-48 h-auto rounded-xl shadow-2xl filter grayscale contrast-125 brightness-90 group-hover:grayscale-0 group-hover:brightness-100 group-hover:contrast-100 transition-all duration-700 ease-in-out border border-obsidian-border group-hover:border-obsidian-accent"
+                    {...props}
+                  />
+                  <div className="absolute inset-0 rounded-xl bg-obsidian-accent/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                </div>
+              );
+            }
+            return <img src={src} alt={alt} className="rounded-lg border border-obsidian-border my-8 mx-auto w-full max-w-full" {...props} />;
+          },
           // Custom link for Wiki-links and external links
           a: ({ href, children }) => {
             if (href?.startsWith('#')) {
               const label = href.slice(1);
-              // Normalize label to ID: "GenAI RAG" -> "genai_rag"
               const id = label.toLowerCase().replace(/ /g, '_') as NoteId;
               
               return (
@@ -119,9 +134,13 @@ export const NoteViewer: React.FC<NoteViewerProps> = ({ content }) => {
             const match = /language-(\w+)/.exec(className || '');
             const lang = match ? match[1] : '';
             
+            if (lang === 'terminal') {
+                return <Terminal />;
+            }
+            
             if (lang) {
                 return (
-                    <div className="relative group">
+                    <div className="relative group overflow-x-auto no-scrollbar">
                         <div className="absolute top-0 right-0 px-2 py-1 text-[10px] font-bold uppercase text-obsidian-text-muted/50 bg-obsidian-border rounded-bl-md opacity-0 group-hover:opacity-100 transition-opacity">
                             {lang}
                         </div>

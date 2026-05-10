@@ -10,10 +10,11 @@
 - **Portfolio**: [deepshah1406.github.io](https://deepshah1406.github.io)
 
 ## Terminal Access
-The following commands are supported (UI simulation coming soon):
-- `whoami`: Displays profile summary.
-- `mail`: Opens default email client.
-- `clear`: Resets the terminal interface.
+> [!INFO]
+> Interactive Node: Type `help` to explore.
+
+```terminal
+```
 
 ---
 [[Identity]]

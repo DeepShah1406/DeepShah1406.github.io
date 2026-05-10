@@ -1,117 +1,157 @@
-import React, { useEffect, useRef } from 'react';
-import * as d3 from 'd3';
+import ForceGraph3D from 'react-force-graph-3d';
 import { useVaultStore } from '@/store/useVaultStore';
-import { useNotes } from '@/hooks/useNotes';
+import { useNotes, type NoteId } from '@/hooks/useNotes';
+import * as THREE from 'three';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 
-interface Node extends d3.SimulationNodeDatum {
+interface GraphNode {
   id: string;
-  group: string;
+  name: string;
+  val: number;
+  color?: string;
+  isDeepShah?: boolean;
 }
 
-interface Link extends d3.SimulationLinkDatum<Node> {
+interface GraphLink {
   source: string;
   target: string;
 }
 
 export const GraphView: React.FC = () => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const { notes } = useVaultStore();
-  const { setActiveNote, activeNoteId } = useNotes();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const fgRef = useRef<any>(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [hoverNode, setHoverNode] = useState<GraphNode | null>(null);
+  
+  const { notes, theme } = useVaultStore();
+  const { activeNoteId, openNote } = useNotes();
+  const [colors, setColors] = useState({ accent: '#bd93f9', muted: '#6272a4', identity: '#008b8b', link: 'rgba(255, 255, 255, 0.1)' });
 
+  // Update dimensions and colors on resize/theme change
   useEffect(() => {
-    if (!svgRef.current) return;
-
-    const width = svgRef.current.clientWidth || 400;
-    const height = svgRef.current.clientHeight || 400;
-
-    d3.select(svgRef.current).selectAll("*").remove();
-
-    const svg = d3.select(svgRef.current)
-      .attr("viewBox", [0, 0, width, height]);
-
-    const nodes: Node[] = Object.values(notes).map(n => ({ id: n.id, group: n.folder }));
-    const links: Link[] = [];
-
-    nodes.forEach(node => {
-      if (node.id !== 'identity') {
-        links.push({ source: 'identity', target: node.id });
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        setDimensions({
+          width: containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight
+        });
       }
-    });
-
-    const simulation = d3.forceSimulation<Node>(nodes)
-      .force("link", d3.forceLink<Node, Link>(links).id(d => d.id).distance(100))
-      .force("charge", d3.forceManyBody().strength(-200))
-      .force("center", d3.forceCenter(width / 2, height / 2));
-
-    const link = svg.append("g")
-      .attr("stroke", "#44475a")
-      .attr("stroke-opacity", 0.6)
-      .selectAll("line")
-      .data(links)
-      .join("line")
-      .attr("stroke-width", 1);
-
-    const node = svg.append("g")
-      .selectAll("g")
-      .data(nodes)
-      .join("g")
-      .call(d3.drag<any, any>()
-        .on("start", dragstarted)
-        .on("drag", dragged)
-        .on("end", dragended))
-      .on("click", (_event, d) => setActiveNote(d.id as any));
-
-    node.append("circle")
-      .attr("r", d => d.id === activeNoteId ? 8 : 5)
-      .attr("fill", d => d.id === activeNoteId ? "#bd93f9" : "#6272a4")
-      .attr("stroke", "#282a36")
-      .attr("stroke-width", 1.5);
-
-    node.append("text")
-      .text(d => d.id)
-      .attr("x", 10)
-      .attr("y", 4)
-      .style("font-size", "10px")
-      .style("fill", "#f8f8f2")
-      .style("pointer-events", "none");
-
-    simulation.on("tick", () => {
-      link
-        .attr("x1", (d: any) => d.source.x)
-        .attr("y1", (d: any) => d.source.y)
-        .attr("x2", (d: any) => d.target.x)
-        .attr("y2", (d: any) => d.target.y);
-
-      node
-        .attr("transform", (d: any) => `translate(${d.x},${d.y})`);
-    });
-
-    function dragstarted(event: any) {
-      if (!event.active) simulation.alphaTarget(0.3).restart();
-      event.subject.fx = event.subject.x;
-      event.subject.fy = event.subject.y;
-    }
-
-    function dragged(event: any) {
-      event.subject.fx = event.x;
-      event.subject.fy = event.y;
-    }
-
-    function dragended(event: any) {
-      if (!event.active) simulation.alphaTarget(0);
-      event.subject.fx = null;
-      event.subject.fy = null;
-    }
-
-    return () => {
-        simulation.stop();
     };
-  }, [notes, activeNoteId, setActiveNote]);
+
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+
+    const style = getComputedStyle(document.documentElement);
+    setColors({
+      accent: style.getPropertyValue('--accent').trim() || '#bd93f9',
+      muted: style.getPropertyValue('--text-muted').trim() || '#6272a4',
+      identity: '#008b8b',
+      link: style.getPropertyValue('--graph-link').trim() || 'rgba(255, 255, 255, 0.1)'
+    });
+
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, [theme]);
+
+  // Prepare graph data
+  const graphData = useMemo(() => {
+    const nodes: GraphNode[] = Object.values(notes).map(n => {
+      const isDeepShah = n.id === 'deep_shah';
+      return {
+        id: n.id,
+        name: isDeepShah ? 'Deep Shah' : n.title,
+        val: isDeepShah ? 12 : (n.id === activeNoteId ? 5 : 2),
+        color: isDeepShah ? colors.identity : (n.id === activeNoteId ? colors.accent : colors.muted),
+        isDeepShah
+      };
+    });
+
+    const links: GraphLink[] = [];
+    const noteList = Object.values(notes);
+
+    noteList.forEach(node => {
+      if (node.id !== 'deep_shah') {
+        links.push({ source: 'deep_shah', target: node.id });
+      }
+
+      noteList.forEach(otherNode => {
+        if (node.id !== otherNode.id && node.folder === otherNode.folder && node.id !== 'deep_shah' && otherNode.id !== 'identity') {
+            if (!links.some(l => (l.source === otherNode.id && l.target === node.id))) {
+                links.push({ source: node.id, target: otherNode.id });
+            }
+        }
+      });
+    });
+
+    return { nodes, links };
+  }, [notes, activeNoteId, colors]);
+
+  const handleNodeHover = useCallback((node: any) => {
+    setHoverNode(node);
+    if (containerRef.current) {
+      containerRef.current.style.cursor = node ? 'pointer' : 'default';
+    }
+  }, []);
 
   return (
-    <div className="w-full h-64 border border-obsidian-border rounded-lg bg-obsidian-sidebar/30 mt-8 relative overflow-hidden">
-      <div className="absolute top-2 left-2 text-[10px] uppercase font-bold text-obsidian-text-muted/50 tracking-widest">Graph View</div>
-      <svg ref={svgRef} className="w-full h-full" />
+    <div ref={containerRef} className="w-full h-[300px] sm:h-[400px] border border-obsidian-border rounded-lg bg-obsidian-sidebar/20 mt-12 relative overflow-hidden group">
+      <div className="absolute top-4 left-4 z-10 flex flex-col gap-1">
+        <div className="text-[10px] uppercase font-bold text-obsidian-text-muted/50 tracking-widest">Interactive 3D Vault</div>
+        <div className="text-[9px] text-obsidian-text-muted/30 opacity-0 group-hover:opacity-100 transition-opacity">Drag to rotate • Scroll to zoom • Click to open</div>
+      </div>
+      
+      {dimensions.width > 0 && (
+        <ForceGraph3D
+          ref={fgRef}
+          width={dimensions.width}
+          height={dimensions.height}
+          graphData={graphData}
+          backgroundColor="rgba(0,0,0,0)"
+          nodeLabel="name"
+          linkColor={() => colors.link}
+          linkWidth={0.75}
+          onNodeClick={(node: any) => openNote(node.id as NoteId)}
+          onNodeHover={handleNodeHover}
+          showNavInfo={false}
+          enableNodeDrag={true}
+          nodeRelSize={1}
+          
+          nodeThreeObject={(node: any) => {
+            const isHovered = hoverNode?.id === node.id;
+            const isActive = node.id === activeNoteId;
+            const isDeepShah = node.isDeepShah;
+            
+            // Base visual size
+            let size = isDeepShah ? 4 : (isActive ? 2.5 : 1.5);
+            if (isHovered) size *= 1.4;
+
+            const group = new THREE.Group();
+            
+            const geometry = new THREE.SphereGeometry(size);
+            const material = new THREE.MeshPhongMaterial({ 
+                color: node.color,
+                transparent: true,
+                opacity: 0.9,
+                shininess: 100
+            });
+            const sphere = new THREE.Mesh(geometry, material);
+            group.add(sphere);
+
+            if (isActive || isDeepShah || isHovered) {
+                const glowSize = size * 1.6;
+                const glowGeom = new THREE.SphereGeometry(glowSize);
+                const glowMat = new THREE.MeshBasicMaterial({ 
+                    color: node.color, 
+                    transparent: true, 
+                    opacity: isHovered ? 0.35 : 0.18 
+                });
+                group.add(new THREE.Mesh(glowGeom, glowMat));
+            }
+
+            return group;
+          }}
+          nodeThreeObjectExtend={false}
+        />
+      )}
     </div>
   );
 };
