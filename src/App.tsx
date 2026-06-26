@@ -6,6 +6,7 @@ import { useVaultStore } from './store/useVaultStore'
 import { useNotes } from './hooks/useNotes'
 import { LandingPage } from './pages/LandingPage'
 import { SimplePage } from './pages/SimplePage'
+import { LoadingScreen } from './components/ui/LoadingScreen'
 import { ArrowLeft } from 'lucide-react'
 
 type View = 'landing' | 'simple' | 'obsidian'
@@ -41,7 +42,32 @@ import certificationsContent from './vault/04-proof/Certifications.md?raw'
 import contactContent from './vault/05-access/Contact_Node.md?raw'
 
 function App() {
-  const [view, setView] = useState<View>('landing');
+  // Initialize view state based on session status and last page
+  const [view, setView] = useState<View>(() => {
+    const sessionAlive = sessionStorage.getItem('ds_session') === 'true';
+    const lastPage     = localStorage.getItem('ds_last_page') as View | null;
+    if (!sessionAlive) {
+      // Hard refresh or first visit: always route to landing page
+      return 'landing';
+    }
+    return lastPage || 'landing';
+  });
+
+  // Detect whether to show the loading animation:
+  //   sessionStorage is wiped on hard refresh (Ctrl+F5) but survives normal F5
+  //   localStorage persists across everything
+  //
+  //   Show animation when:
+  //   - First visit ever                           (!lastPage)
+  //   - Was on landing page + any refresh          (lastPage === 'landing')
+  //   - Hard refresh from any page                 (!sessionAlive)
+  const [isLoading, setIsLoading] = useState<boolean>(() => {
+    const sessionAlive = sessionStorage.getItem('ds_session') === 'true';
+    const lastPage     = localStorage.getItem('ds_last_page');
+    sessionStorage.setItem('ds_session', 'true'); // mark session as active
+    return !lastPage || lastPage === 'landing' || !sessionAlive;
+  });
+
   const { notes, setNotes, theme } = useVaultStore();
   const { activeNoteId } = useNotes();
 
@@ -182,7 +208,17 @@ function App() {
     });
   }, [setNotes, theme]);
 
+  // Track which view the user is on - used on next page load to decide animation
+  useEffect(() => {
+    localStorage.setItem('ds_last_page', view);
+  }, [view]);
+
   // ── View routing (after all hooks) ────────────────────────────────────────
+  if (isLoading) return (
+    <LoadingScreen
+      onComplete={() => setIsLoading(false)}
+    />
+  );
   if (view === 'landing') return <LandingPage onSelect={setView} />;
   if (view === 'simple')  return <SimplePage onBack={() => setView('landing')} />;
 

@@ -84,6 +84,8 @@ src/
 - Animated hero with cycling roles
 - Skills grid, 6 project cards, experience timeline
 - Achievements and contact section
+- **Dynamic Loading Screen**: Pixel-art "DS" logo entry animation (fly-in, pulse glow, scatter outward) using `anime.js` on first visit and hard refresh (Ctrl+F5)
+- **Bidirectional Infinite Scroll**: Overscroll trigger (wheel threshold and mobile touch swipe) at page edges that loops the visitor (down at bottom loops to top, up at top loops to bottom) with a staggered `anime.js` spiral vortex overlay transition
 - Fully responsive
 
 ## 🧠 Digital Brain (Obsidian Vault) - Features

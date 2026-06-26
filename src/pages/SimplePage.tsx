@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { animate } from 'animejs';
 import type { Variants } from 'framer-motion';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import {
@@ -164,12 +165,143 @@ export const SimplePage = ({ onBack }: SimplePageProps) => {
   const [roleIndex, setRoleIndex] = useState(0);
   const [activeSection, setActiveSection] = useState('hero');
 
+  // Infinite scroll refs
+  const scrollOverlayRef = useRef<HTMLDivElement>(null);
+  const isAtBottomRef    = useRef(false);
+  const transitioningRef = useRef(false);
+  const sentinelRef      = useRef<HTMLDivElement>(null);
+  const scrollAccumRef   = useRef(0);   // accumulated delta for threshold
+  const directionRef     = useRef<'down' | 'up'>('down'); // which way we looped
+
   // Cycle roles
   useEffect(() => {
     const interval = setInterval(() => {
       setRoleIndex((i) => (i + 1) % roles.length);
     }, 2800);
     return () => clearInterval(interval);
+  }, []);
+
+  // IntersectionObserver - detect when user reaches the bottom sentinel
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { isAtBottomRef.current = entry.isIntersecting; },
+      { threshold: 0.5 }
+    );
+    obs.observe(sentinel);
+    return () => obs.disconnect();
+  }, []);
+
+  // Infinite scroll - spiral vortex transition (desktop wheel + mobile touch)
+  useEffect(() => {
+    // ── Spiral ring animation ──────────────────────────────────────────────
+    const spiralIn = (overlay: HTMLDivElement): Promise<void> =>
+      new Promise(resolve => {
+        const rings = Array.from(overlay.querySelectorAll<HTMLElement>('.spiral-ring'));
+        // reset each ring
+        rings.forEach(r => { r.style.transform = 'translate(-50%,-50%) scale(0.05) rotate(-720deg)'; r.style.opacity = '0'; });
+        overlay.style.display = 'flex';
+        let done = 0;
+        rings.forEach((ring, i) => {
+          animate(ring, {
+            scale:    [0.05, 1],
+            rotate:   ['-720deg', '0deg'],
+            opacity:  [0, ring.dataset.opacity ? Number(ring.dataset.opacity) : 0.6],
+            duration: 650,
+            delay:    i * 55,
+            ease:     'outQuart',
+            onComplete: () => { if (++done === rings.length) resolve(); },
+          });
+        });
+      });
+
+    const spiralOut = (overlay: HTMLDivElement): Promise<void> =>
+      new Promise(resolve => {
+        const rings = Array.from(overlay.querySelectorAll<HTMLElement>('.spiral-ring'));
+        let done = 0;
+        rings.forEach((ring, i) => {
+          animate(ring, {
+            scale:    [1, 0.05],
+            rotate:   ['0deg', '720deg'],
+            opacity:  [ring.dataset.opacity ? Number(ring.dataset.opacity) : 0.6, 0],
+            duration: 550,
+            delay:    (rings.length - 1 - i) * 45, // reversed stagger
+            ease:     'inQuart',
+            onComplete: () => { if (++done === rings.length) resolve(); },
+          });
+        });
+      });
+
+    // ── Trigger ────────────────────────────────────────────────────────────
+    const trigger = async (dir: 'down' | 'up') => {
+      if (transitioningRef.current) return;
+      transitioningRef.current = true;
+      directionRef.current = dir;
+      scrollAccumRef.current = 0;
+
+      const overlay = scrollOverlayRef.current;
+      if (!overlay) { transitioningRef.current = false; return; }
+
+      await spiralIn(overlay);
+
+      // Snap to destination while rings are fully visible
+      if (dir === 'down') {
+        window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+      } else {
+        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' as ScrollBehavior });
+      }
+
+      await new Promise(r => setTimeout(r, 120)); // brief hold
+      await spiralOut(overlay);
+
+      overlay.style.display = 'none';
+      transitioningRef.current = false;
+      isAtBottomRef.current   = false;
+      scrollAccumRef.current  = 0;
+    };
+
+    // ── Wheel handler ──────────────────────────────────────────────────────
+    const THRESHOLD = 300; // accumulated px before firing
+
+    const onWheel = (e: WheelEvent) => {
+      if (transitioningRef.current) return;
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+      const atBottom = isAtBottomRef.current && scrollTop + clientHeight >= scrollHeight - 40;
+      const atTop    = scrollTop <= 4;
+
+      if (atBottom && e.deltaY > 0) {
+        scrollAccumRef.current += e.deltaY;
+        if (scrollAccumRef.current >= THRESHOLD) trigger('down');
+      } else if (atTop && e.deltaY < 0) {
+        scrollAccumRef.current += Math.abs(e.deltaY);
+        if (scrollAccumRef.current >= THRESHOLD) trigger('up');
+      } else {
+        scrollAccumRef.current = 0; // reset if scrolling away from edge
+      }
+    };
+
+    // ── Touch handler ──────────────────────────────────────────────────────
+    let touchStartY = 0;
+    const TOUCH_THRESHOLD = 60;
+
+    const onTouchStart = (e: TouchEvent) => { touchStartY = e.touches[0].clientY; };
+    const onTouchEnd   = (e: TouchEvent) => {
+      if (transitioningRef.current) return;
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+      const deltaY = touchStartY - e.changedTouches[0].clientY;
+      if (isAtBottomRef.current && scrollTop + clientHeight >= scrollHeight - 40 && deltaY > TOUCH_THRESHOLD) trigger('down');
+      if (scrollTop <= 4 && deltaY < -TOUCH_THRESHOLD) trigger('up');
+    };
+
+    window.addEventListener('wheel',      onWheel,      { passive: true });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchend',   onTouchEnd,   { passive: true });
+    return () => {
+      window.removeEventListener('wheel',      onWheel);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchend',   onTouchEnd);
+    };
   }, []);
 
   // Track active section on scroll
@@ -297,7 +429,7 @@ export const SimplePage = ({ onBack }: SimplePageProps) => {
             </motion.div>
 
             <motion.h1 variants={fadeUp} className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight">
-              Deep{' '}
+              <span className="text-white">Deep</span>{' '}
               <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #00CED1, #008B8B, #20B2AA)' }}>
                 Shah
               </span>
@@ -615,7 +747,58 @@ export const SimplePage = ({ onBack }: SimplePageProps) => {
           <p className={`text-xs ${textMuted} tracking-widest`}>
             Built by <span className="text-[#008B8B] font-bold">Deep Shah</span> · 2026
           </p>
+          <p className="text-[9px] text-[#008B8B]/30 mt-2 tracking-widest uppercase">
+            scroll down to loop back
+          </p>
         </footer>
+
+        {/* Bottom sentinel - IntersectionObserver target */}
+        <div ref={sentinelRef} className="h-1" />
+      </div>
+
+      {/* Infinite scroll transition overlay - spiral vortex */}
+      <div
+        ref={scrollOverlayRef}
+        className="fixed inset-0 z-[500] flex-col items-center justify-center bg-[#030d14] pointer-events-none"
+        style={{ display: 'none', opacity: 1 }}
+      >
+        {/* Spiral rings - concentric rotating circles */}
+        {[
+          { size: '12vmin',  bw: 3,   opacity: 0.9 },
+          { size: '28vmin',  bw: 2.5, opacity: 0.8 },
+          { size: '46vmin',  bw: 2,   opacity: 0.7 },
+          { size: '64vmin',  bw: 1.5, opacity: 0.55 },
+          { size: '82vmin',  bw: 1,   opacity: 0.4 },
+          { size: '104vmin', bw: 1,   opacity: 0.25 },
+        ].map((ring, i) => (
+          <div
+            key={i}
+            className="spiral-ring absolute rounded-full"
+            data-opacity={ring.opacity}
+            style={{
+              width:       ring.size,
+              height:      ring.size,
+              top:         '50%',
+              left:        '50%',
+              transform:   'translate(-50%,-50%) scale(0.05) rotate(-720deg)',
+              opacity:     0,
+              border:      `${ring.bw}px solid`,
+              borderColor: `rgba(0,206,209,${ring.opacity})`,
+              boxShadow:   `0 0 ${12 + i * 4}px rgba(0,206,209,${ring.opacity * 0.4}), inset 0 0 ${8 + i * 2}px rgba(0,139,139,${ring.opacity * 0.2})`,
+            }}
+          />
+        ))}
+
+        {/* Center glow */}
+        <div
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            width: '30vmin', height: '30vmin',
+            background: 'radial-gradient(circle, rgba(0,206,209,0.15) 0%, transparent 70%)',
+            top: '50%', left: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
+        />
       </div>
     </div>
   );
