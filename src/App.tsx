@@ -7,7 +7,11 @@ import { useNotes } from './hooks/useNotes'
 import { LandingPage } from './pages/LandingPage'
 import { SimplePage } from './pages/SimplePage'
 import { LoadingScreen } from './components/ui/LoadingScreen'
+import { ParticleLoadingScreen } from './components/ui/ParticleLoadingScreen'
 import { ArrowLeft } from 'lucide-react'
+
+// Swappable loading animation style: 'pixel' | 'particle'
+const LOADING_STYLE: 'pixel' | 'particle' = 'particle';
 
 type View = 'landing' | 'simple' | 'obsidian'
 
@@ -214,11 +218,12 @@ function App() {
   }, [view]);
 
   // ── View routing (after all hooks) ────────────────────────────────────────
-  if (isLoading) return (
-    <LoadingScreen
-      onComplete={() => setIsLoading(false)}
-    />
-  );
+  if (isLoading) {
+    if (LOADING_STYLE === 'particle') {
+      return <ParticleLoadingScreen onComplete={() => setIsLoading(false)} />;
+    }
+    return <LoadingScreen onComplete={() => setIsLoading(false)} />;
+  }
   if (view === 'landing') return <LandingPage onSelect={setView} />;
   if (view === 'simple')  return <SimplePage onBack={() => setView('landing')} />;
 
