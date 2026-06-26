@@ -84,7 +84,10 @@ src/
 - Animated hero with cycling roles
 - Skills grid, 6 project cards, experience timeline
 - Achievements and contact section
-- **Dynamic Loading Screen**: Pixel-art "DS" logo entry animation (fly-in, pulse glow, scatter outward) using `anime.js` on first visit and hard refresh (Ctrl+F5)
+- **Dynamic Loading Screen**: Swappable loading animations using `anime.js` (selectable via `LOADING_STYLE` in `App.tsx`):
+  1. *Pixel Dissolve*: Retro "DS" initials pop in pixel-by-pixel, pulse glow, and scatter.
+  2. *Particle Convergence*: Constellation nodes fly in from off-screen, form the "DS" mesh with glowing edges, and dissolve.
+  3. *Pixel Grid Reveal*: Screen-filling grid populates with a ripple from the center, highlights the "DS" logo shape in glowing cyan, and shatters pixels outward.
 - **Bidirectional Infinite Scroll**: Overscroll trigger (wheel threshold and mobile touch swipe) at page edges that loops the visitor (down at bottom loops to top, up at top loops to bottom) with a staggered `anime.js` spiral vortex overlay transition
 - Fully responsive
 
