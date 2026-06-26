@@ -2,9 +2,41 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      window.addEventListener('error', function(e) {
+        var div = document.createElement('div');
+        div.style.position = 'fixed';
+        div.style.inset = '20px';
+        div.style.zIndex = '99999';
+        div.style.padding = '20px';
+        div.style.color = '#ef4444';
+        div.style.backgroundColor = '#fef2f2';
+        div.style.border = '2px solid #f87171';
+        div.style.borderRadius = '8px';
+        div.style.fontFamily = 'monospace';
+        div.style.overflow = 'auto';
+        div.innerHTML = '<h2>Global Script Error</h2><p><b>' + e.message + '</b></p><p>File: ' + e.filename + ' at line ' + e.lineno + '</p><pre>' + (e.error ? e.error.stack : '') + '</pre>';
+        document.body.appendChild(div);
+      });
+      window.addEventListener('unhandledrejection', function(e) {
+        var div = document.createElement('div');
+        div.style.position = 'fixed';
+        div.style.inset = '20px';
+        div.style.zIndex = '99999';
+        div.style.padding = '20px';
+        div.style.color = '#ef4444';
+        div.style.backgroundColor = '#fef2f2';
+        div.style.border = '2px solid #f87171';
+        div.style.borderRadius = '8px';
+        div.style.fontFamily = 'monospace';
+        div.style.overflow = 'auto';
+        div.innerHTML = '<h2>Unhandled Promise Rejection</h2><p><b>' + e.reason + '</b></p>';
+        document.body.appendChild(div);
+      });
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>portfolio_test</title>
+    <title>Deep Shah - AI/ML Engineer</title>
   </head>
   <body>
     <div id="root"></div>

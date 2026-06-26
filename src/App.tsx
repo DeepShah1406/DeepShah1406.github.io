@@ -1,9 +1,22 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { VaultShell } from './components/VaultShell'
 import { NoteViewer } from './components/editor/NoteViewer'
 import { GraphView } from './components/graph/GraphView'
 import { useVaultStore } from './store/useVaultStore'
 import { useNotes } from './hooks/useNotes'
+import { LandingPage } from './pages/LandingPage'
+import { SimplePage } from './pages/SimplePage'
+import { LoadingScreen } from './components/ui/LoadingScreen'
+import { ParticleLoadingScreen } from './components/ui/ParticleLoadingScreen'
+import { GridRevealLoadingScreen } from './components/ui/GridRevealLoadingScreen'
+import { ProgressBarLoadingScreen } from './components/ui/ProgressBarLoadingScreen'
+import { TypewriterLoadingScreen } from './components/ui/TypewriterLoadingScreen'
+import { ArrowLeft } from 'lucide-react'
+
+// Swappable loading animation style: 'pixel' | 'particle' | 'grid' | 'progress' | 'typewriter'
+const LOADING_STYLE: 'pixel' | 'particle' | 'grid' | 'progress' | 'typewriter' = 'pixel';
+
+type View = 'landing' | 'simple' | 'obsidian'
 
 // 00 - Identity
 import deepShahContent from './vault/00-identity/Deep_Shah.md?raw'
@@ -36,9 +49,46 @@ import certificationsContent from './vault/04-proof/Certifications.md?raw'
 import contactContent from './vault/05-access/Contact_Node.md?raw'
 
 function App() {
+  // Initialize view state based on session status and last page
+  const [view, setView] = useState<View>(() => {
+    const sessionAlive = sessionStorage.getItem('ds_session') === 'true';
+    const lastPage     = localStorage.getItem('ds_last_page') as View | null;
+    if (!sessionAlive) {
+      // Hard refresh or first visit: always route to landing page
+      return 'landing';
+    }
+    return lastPage || 'landing';
+  });
+
+  // Theme state shared between LandingPage and SimplePage
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    const saved = localStorage.getItem('ds_theme_mode');
+    return saved === null ? true : saved === 'dark';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('ds_theme_mode', isDark ? 'dark' : 'light');
+  }, [isDark]);
+
+  // Detect whether to show the loading animation:
+  //   sessionStorage is wiped on hard refresh (Ctrl+F5) but survives normal F5
+  //   localStorage persists across everything
+  //
+  //   Show animation when:
+  //   - First visit ever                           (!lastPage)
+  //   - Was on landing page + any refresh          (lastPage === 'landing')
+  //   - Hard refresh from any page                 (!sessionAlive)
+  const [isLoading, setIsLoading] = useState<boolean>(() => {
+    const sessionAlive = sessionStorage.getItem('ds_session') === 'true';
+    const lastPage     = localStorage.getItem('ds_last_page');
+    sessionStorage.setItem('ds_session', 'true'); // mark session as active
+    return !lastPage || lastPage === 'landing' || !sessionAlive;
+  });
+
   const { notes, setNotes, theme } = useVaultStore();
   const { activeNoteId } = useNotes();
 
+  // -- Vault data initialisation (always called - Rules of Hooks) ────────────
   useEffect(() => {
     // Apply persisted theme on load
     if (theme !== 'default') {
@@ -175,15 +225,64 @@ function App() {
     });
   }, [setNotes, theme]);
 
+  // Track which view the user is on - used on next page load to decide animation
+  useEffect(() => {
+    localStorage.setItem('ds_last_page', view);
+  }, [view]);
+
+  // ── View routing (after all hooks) ────────────────────────────────────────
+  if (isLoading) {
+    if (LOADING_STYLE === 'particle') {
+      return <ParticleLoadingScreen onComplete={() => setIsLoading(false)} />;
+    }
+    if (LOADING_STYLE === 'grid') {
+      return <GridRevealLoadingScreen onComplete={() => setIsLoading(false)} />;
+    }
+    if (LOADING_STYLE === 'progress') {
+      return <ProgressBarLoadingScreen onComplete={() => setIsLoading(false)} />;
+    }
+    if (LOADING_STYLE === 'typewriter') {
+      return <TypewriterLoadingScreen onComplete={() => setIsLoading(false)} />;
+    }
+    return <LoadingScreen onComplete={() => setIsLoading(false)} />;
+  }
+  if (view === 'landing') return (
+    <LandingPage
+      onSelect={setView}
+      isDark={isDark}
+      onToggleDark={() => setIsDark(!isDark)}
+    />
+  );
+  if (view === 'simple') return (
+    <SimplePage
+      onBack={() => setView('landing')}
+      isDark={isDark}
+      onToggleDark={() => setIsDark(!isDark)}
+    />
+  );
+
+  // ── Obsidian vault view ───────────────────────────────────────────────────
   const activeNote = (activeNoteId && notes[activeNoteId]) || { content: '# Not Found\n\nThis note does not exist yet.' };
 
   return (
-    <VaultShell>
-      <NoteViewer content={activeNote.content} />
-      <div className="mt-12 border-t border-obsidian-border pt-8">
-        <GraphView />
-      </div>
-    </VaultShell>
+    <div className="relative w-full h-full">
+      {/* Floating back-to-portal button */}
+      <button
+        onClick={() => setView('landing')}
+        className="fixed bottom-5 right-5 z-[200] flex items-center gap-1.5 px-3 py-2 rounded-xl border border-obsidian-border bg-obsidian-sidebar/90 backdrop-blur-md text-[11px] font-bold uppercase tracking-widest text-obsidian-text-muted hover:text-obsidian-accent hover:border-obsidian-accent/50 transition-all duration-300 shadow-lg group"
+        title="Back to Portal"
+      >
+        <ArrowLeft size={12} className="group-hover:-translate-x-0.5 transition-transform" />
+        Portal
+      </button>
+
+      <VaultShell>
+        <NoteViewer content={activeNote.content} />
+        <div className="mt-12 border-t border-obsidian-border pt-8">
+          <GraphView />
+        </div>
+      </VaultShell>
+    </div>
   )
 }
 
