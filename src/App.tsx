@@ -6,6 +6,7 @@ import { useVaultStore } from './store/useVaultStore'
 import { useNotes } from './hooks/useNotes'
 import { LandingPage } from './pages/LandingPage'
 import { SimplePage } from './pages/SimplePage'
+import { CreativePage } from './pages/CreativePage'
 import { LoadingScreen } from './components/ui/LoadingScreen'
 import { ParticleLoadingScreen } from './components/ui/ParticleLoadingScreen'
 import { GridRevealLoadingScreen } from './components/ui/GridRevealLoadingScreen'
@@ -16,7 +17,7 @@ import { ArrowLeft } from 'lucide-react'
 // Swappable loading animation style: 'pixel' | 'particle' | 'grid' | 'progress' | 'typewriter'
 const LOADING_STYLE: 'pixel' | 'particle' | 'grid' | 'progress' | 'typewriter' = 'pixel';
 
-type View = 'landing' | 'simple' | 'obsidian'
+type View = 'landing' | 'simple' | 'obsidian' | 'creative';
 
 // 00 - Identity
 import deepShahContent from './vault/00-identity/Deep_Shah.md?raw'
@@ -255,6 +256,13 @@ function App() {
   );
   if (view === 'simple') return (
     <SimplePage
+      onBack={() => setView('landing')}
+      isDark={isDark}
+      onToggleDark={() => setIsDark(!isDark)}
+    />
+  );
+  if (view === 'creative') return (
+    <CreativePage
       onBack={() => setView('landing')}
       isDark={isDark}
       onToggleDark={() => setIsDark(!isDark)}

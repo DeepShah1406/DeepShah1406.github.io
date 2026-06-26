@@ -3,7 +3,7 @@ import type { Variants } from 'framer-motion';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sun, Moon } from 'lucide-react';
 
-type View = 'landing' | 'simple' | 'obsidian';
+type View = 'landing' | 'simple' | 'obsidian' | 'creative';
 
 interface LandingPageProps {
   onSelect: (view: View) => void;
@@ -61,15 +61,15 @@ const cards: PortalCard[] = [
     tagColor: 'purple',
   },
   {
-    id: 'anime',
+    id: 'creative',
     icon: '✨',
     title: 'Anime.js Portfolio',
     subtitle: 'The Extraordinary One',
     description: 'Floating menus, dome gallery, pixel transitions, SVGator animations - the full creative experience.',
-    tag: 'Coming Soon',
+    tag: 'Interactive',
     tagColor: 'amber',
-    disabled: true,
-    comingSoon: true,
+    disabled: false,
+    comingSoon: false,
   },
 ];
 
