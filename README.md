@@ -88,6 +88,7 @@ src/
   1. *Pixel Dissolve*: Retro "DS" initials pop in pixel-by-pixel, pulse glow, and scatter.
   2. *Particle Convergence*: Constellation nodes fly in from off-screen, form the "DS" mesh with glowing edges, and dissolve.
   3. *Pixel Grid Reveal*: Screen-filling grid populates with a ripple from the center, highlights the "DS" logo shape in glowing cyan, and shatters pixels outward.
+  4. *Slick Progress Bar*: Minimal name layout that fades in and stretches dynamically, combined with a thin cyan progress bar and 3-digit counter, sliding upward on finish.
 - **Bidirectional Infinite Scroll**: Overscroll trigger (wheel threshold and mobile touch swipe) at page edges that loops the visitor (down at bottom loops to top, up at top loops to bottom) with a staggered `anime.js` spiral vortex overlay transition
 - Fully responsive
 
