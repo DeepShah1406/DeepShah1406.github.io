@@ -89,6 +89,7 @@ src/
   2. *Particle Convergence*: Constellation nodes fly in from off-screen, form the "DS" mesh with glowing edges, and dissolve.
   3. *Pixel Grid Reveal*: Screen-filling grid populates with a ripple from the center, highlights the "DS" logo shape in glowing cyan, and shatters pixels outward.
   4. *Slick Progress Bar*: Minimal name layout that fades in and stretches dynamically, combined with a thin cyan progress bar and 3-digit counter, sliding upward on finish.
+  5. *Terminal Typewriter*: macOS-style terminal console that types out the name, roles, and a launching sequence with a realistic blinking block cursor.
 - **Bidirectional Infinite Scroll**: Overscroll trigger (wheel threshold and mobile touch swipe) at page edges that loops the visitor (down at bottom loops to top, up at top loops to bottom) with a staggered `anime.js` spiral vortex overlay transition
 - Fully responsive
 
