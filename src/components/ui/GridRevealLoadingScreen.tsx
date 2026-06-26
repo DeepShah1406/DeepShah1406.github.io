@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { animate, stagger } from 'animejs';
+import { animate } from 'animejs';
 
 // ── Config ──────────────────────────────────────────────────────────────────
 const COLS = 12;
@@ -79,7 +79,12 @@ export const GridRevealLoadingScreen = ({ onComplete }: { onComplete: () => void
       scale: [0, 1],
       opacity: [0, 1],
       duration: 650,
-      delay: stagger(30, { grid: [COLS, ROWS], from: 'center' }) as any,
+      delay: ((_el: any, i: number) => {
+        const r = Math.floor(i / COLS);
+        const c = i % COLS;
+        const dist = Math.sqrt(Math.pow(r - 3.5, 2) + Math.pow(c - 5.5, 2));
+        return dist * 35;
+      }) as any,
       ease: 'easeOutBack',
       onComplete: () => {
         if (cancelled) return;
@@ -92,7 +97,7 @@ export const GridRevealLoadingScreen = ({ onComplete }: { onComplete: () => void
           scale: [1, 1.15, 1],
           backgroundColor: ['#00CED1', '#e0f7f7', '#00CED1'],
           duration: 500,
-          delay: stagger(15, { from: 'center' }) as any,
+          delay: ((_el: any, i: number) => i * 15) as any,
           ease: 'easeInOutSine',
           onComplete: () => {
             if (cancelled) return;
@@ -109,7 +114,12 @@ export const GridRevealLoadingScreen = ({ onComplete }: { onComplete: () => void
                 translateY: () => rand(-350, 350),
                 rotate: () => rand(-180, 180),
                 duration: 850,
-                delay: stagger(20, { grid: [COLS, ROWS], from: 'center' }) as any,
+                delay: ((_el: any, i: number) => {
+                  const r = Math.floor(i / COLS);
+                  const c = i % COLS;
+                  const dist = Math.sqrt(Math.pow(r - 3.5, 2) + Math.pow(c - 5.5, 2));
+                  return dist * 25;
+                }) as any,
                 ease: 'easeInQuad',
               });
 
