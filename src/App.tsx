@@ -1,9 +1,14 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { VaultShell } from './components/VaultShell'
 import { NoteViewer } from './components/editor/NoteViewer'
 import { GraphView } from './components/graph/GraphView'
 import { useVaultStore } from './store/useVaultStore'
 import { useNotes } from './hooks/useNotes'
+import { LandingPage } from './pages/LandingPage'
+import { SimplePage } from './pages/SimplePage'
+import { ArrowLeft } from 'lucide-react'
+
+type View = 'landing' | 'simple' | 'obsidian'
 
 // 00 - Identity
 import deepShahContent from './vault/00-identity/Deep_Shah.md?raw'
@@ -36,9 +41,11 @@ import certificationsContent from './vault/04-proof/Certifications.md?raw'
 import contactContent from './vault/05-access/Contact_Node.md?raw'
 
 function App() {
+  const [view, setView] = useState<View>('landing');
   const { notes, setNotes, theme } = useVaultStore();
   const { activeNoteId } = useNotes();
 
+  // -- Vault data initialisation (always called - Rules of Hooks) ────────────
   useEffect(() => {
     // Apply persisted theme on load
     if (theme !== 'default') {
@@ -175,15 +182,32 @@ function App() {
     });
   }, [setNotes, theme]);
 
+  // ── View routing (after all hooks) ────────────────────────────────────────
+  if (view === 'landing') return <LandingPage onSelect={setView} />;
+  if (view === 'simple')  return <SimplePage onBack={() => setView('landing')} />;
+
+  // ── Obsidian vault view ───────────────────────────────────────────────────
   const activeNote = (activeNoteId && notes[activeNoteId]) || { content: '# Not Found\n\nThis note does not exist yet.' };
 
   return (
-    <VaultShell>
-      <NoteViewer content={activeNote.content} />
-      <div className="mt-12 border-t border-obsidian-border pt-8">
-        <GraphView />
-      </div>
-    </VaultShell>
+    <div className="relative w-full h-full">
+      {/* Floating back-to-portal button */}
+      <button
+        onClick={() => setView('landing')}
+        className="fixed bottom-5 right-5 z-[200] flex items-center gap-1.5 px-3 py-2 rounded-xl border border-obsidian-border bg-obsidian-sidebar/90 backdrop-blur-md text-[11px] font-bold uppercase tracking-widest text-obsidian-text-muted hover:text-obsidian-accent hover:border-obsidian-accent/50 transition-all duration-300 shadow-lg group"
+        title="Back to Portal"
+      >
+        <ArrowLeft size={12} className="group-hover:-translate-x-0.5 transition-transform" />
+        Portal
+      </button>
+
+      <VaultShell>
+        <NoteViewer content={activeNote.content} />
+        <div className="mt-12 border-t border-obsidian-border pt-8">
+          <GraphView />
+        </div>
+      </VaultShell>
+    </div>
   )
 }
 
