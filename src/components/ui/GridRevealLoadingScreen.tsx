@@ -85,7 +85,7 @@ export const GridRevealLoadingScreen = ({ onComplete }: { onComplete: () => void
         const dist = Math.sqrt(Math.pow(r - 3.5, 2) + Math.pow(c - 5.5, 2));
         return dist * 35;
       }) as any,
-      ease: 'easeOutBack',
+      ease: 'outBack',
       onComplete: () => {
         if (cancelled) return;
 
@@ -98,7 +98,7 @@ export const GridRevealLoadingScreen = ({ onComplete }: { onComplete: () => void
           backgroundColor: ['#00CED1', '#e0f7f7', '#00CED1'],
           duration: 500,
           delay: ((_el: any, i: number) => i * 15) as any,
-          ease: 'easeInOutSine',
+          ease: 'inOutSine',
           onComplete: () => {
             if (cancelled) return;
 
@@ -120,7 +120,7 @@ export const GridRevealLoadingScreen = ({ onComplete }: { onComplete: () => void
                   const dist = Math.sqrt(Math.pow(r - 3.5, 2) + Math.pow(c - 5.5, 2));
                   return dist * 25;
                 }) as any,
-                ease: 'easeInQuad',
+                ease: 'inQuad',
               });
 
               // Fade background container
