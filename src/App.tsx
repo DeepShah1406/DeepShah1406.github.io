@@ -9,10 +9,11 @@ import { SimplePage } from './pages/SimplePage'
 import { LoadingScreen } from './components/ui/LoadingScreen'
 import { ParticleLoadingScreen } from './components/ui/ParticleLoadingScreen'
 import { GridRevealLoadingScreen } from './components/ui/GridRevealLoadingScreen'
+import { ProgressBarLoadingScreen } from './components/ui/ProgressBarLoadingScreen'
 import { ArrowLeft } from 'lucide-react'
 
-// Swappable loading animation style: 'pixel' | 'particle' | 'grid'
-const LOADING_STYLE: 'pixel' | 'particle' | 'grid' = 'grid';
+// Swappable loading animation style: 'pixel' | 'particle' | 'grid' | 'progress'
+const LOADING_STYLE: 'pixel' | 'particle' | 'grid' | 'progress' = 'progress';
 
 type View = 'landing' | 'simple' | 'obsidian'
 
@@ -225,6 +226,9 @@ function App() {
     }
     if (LOADING_STYLE === 'grid') {
       return <GridRevealLoadingScreen onComplete={() => setIsLoading(false)} />;
+    }
+    if (LOADING_STYLE === 'progress') {
+      return <ProgressBarLoadingScreen onComplete={() => setIsLoading(false)} />;
     }
     return <LoadingScreen onComplete={() => setIsLoading(false)} />;
   }
