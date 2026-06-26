@@ -14,7 +14,7 @@ import { TypewriterLoadingScreen } from './components/ui/TypewriterLoadingScreen
 import { ArrowLeft } from 'lucide-react'
 
 // Swappable loading animation style: 'pixel' | 'particle' | 'grid' | 'progress' | 'typewriter'
-const LOADING_STYLE: 'pixel' | 'particle' | 'grid' | 'progress' | 'typewriter' = 'pixel';
+const LOADING_STYLE: 'pixel' | 'particle' | 'grid' | 'progress' | 'typewriter' = 'particle';
 
 type View = 'landing' | 'simple' | 'obsidian'
 
