@@ -14,7 +14,7 @@ import { TypewriterLoadingScreen } from './components/ui/TypewriterLoadingScreen
 import { ArrowLeft } from 'lucide-react'
 
 // Swappable loading animation style: 'pixel' | 'particle' | 'grid' | 'progress' | 'typewriter'
-const LOADING_STYLE: 'pixel' | 'particle' | 'grid' | 'progress' | 'typewriter' = 'particle';
+const LOADING_STYLE: 'pixel' | 'particle' | 'grid' | 'progress' | 'typewriter' = 'pixel';
 
 type View = 'landing' | 'simple' | 'obsidian'
 
@@ -59,6 +59,16 @@ function App() {
     }
     return lastPage || 'landing';
   });
+
+  // Theme state shared between LandingPage and SimplePage
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    const saved = localStorage.getItem('ds_theme_mode');
+    return saved === null ? true : saved === 'dark';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('ds_theme_mode', isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   // Detect whether to show the loading animation:
   //   sessionStorage is wiped on hard refresh (Ctrl+F5) but survives normal F5
@@ -236,8 +246,20 @@ function App() {
     }
     return <LoadingScreen onComplete={() => setIsLoading(false)} />;
   }
-  if (view === 'landing') return <LandingPage onSelect={setView} />;
-  if (view === 'simple')  return <SimplePage onBack={() => setView('landing')} />;
+  if (view === 'landing') return (
+    <LandingPage
+      onSelect={setView}
+      isDark={isDark}
+      onToggleDark={() => setIsDark(!isDark)}
+    />
+  );
+  if (view === 'simple') return (
+    <SimplePage
+      onBack={() => setView('landing')}
+      isDark={isDark}
+      onToggleDark={() => setIsDark(!isDark)}
+    />
+  );
 
   // ── Obsidian vault view ───────────────────────────────────────────────────
   const activeNote = (activeNoteId && notes[activeNoteId]) || { content: '# Not Found\n\nThis note does not exist yet.' };

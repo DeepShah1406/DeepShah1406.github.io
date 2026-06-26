@@ -5,11 +5,14 @@ import { motion, AnimatePresence, useInView } from 'framer-motion';
 import {
   Sun, Moon, ArrowLeft, GitBranch, Link2, Mail, ExternalLink,
   Code2, Brain, Cpu, Terminal, Container, Globe, Eye, Zap,
-  ChevronRight, Award, Briefcase, GraduationCap, User, Star
+  ChevronRight, Award, Briefcase, GraduationCap, User, Star,
+  Menu, X
 } from 'lucide-react';
 
 interface SimplePageProps {
   onBack: () => void;
+  isDark: boolean;
+  onToggleDark: () => void;
 }
 
 // ── Data ─────────────────────────────────────────────────────────────────────
@@ -160,10 +163,10 @@ function AnimatedSection({ children, className = '' }: { children: React.ReactNo
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-export const SimplePage = ({ onBack }: SimplePageProps) => {
-  const [isDark, setIsDark] = useState(true);
+export const SimplePage = ({ onBack, isDark, onToggleDark }: SimplePageProps) => {
   const [roleIndex, setRoleIndex] = useState(0);
   const [activeSection, setActiveSection] = useState('hero');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Infinite scroll refs
   const scrollOverlayRef = useRef<HTMLDivElement>(null);
@@ -371,7 +374,7 @@ export const SimplePage = ({ onBack }: SimplePageProps) => {
             <span className="hidden sm:inline">Portal</span>
           </button>
 
-          {/* Nav links */}
+          {/* Nav links (Desktop) */}
           <div className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
               <button
@@ -388,30 +391,90 @@ export const SimplePage = ({ onBack }: SimplePageProps) => {
             ))}
           </div>
 
-          {/* Theme toggle */}
-          <button
-            onClick={() => setIsDark(!isDark)}
-            className={`p-2 rounded-lg border transition-all duration-300 ${
-              dark
-                ? 'border-[#00CED1]/20 bg-[#008B8B]/10 text-[#00CED1] hover:bg-[#008B8B]/20'
-                : 'border-[#008B8B]/25 bg-[#008B8B]/10 text-[#006666] hover:bg-[#008B8B]/15'
-            }`}
-            aria-label="Toggle theme"
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={isDark ? 'moon' : 'sun'}
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.25 }}
-              >
-                {isDark ? <Sun size={15} /> : <Moon size={15} />}
-              </motion.div>
-            </AnimatePresence>
-          </button>
+          {/* Controls right */}
+          <div className="flex items-center gap-2">
+            {/* Theme toggle */}
+            <button
+              onClick={onToggleDark}
+              className={`p-2 rounded-lg border transition-all duration-300 ${
+                dark
+                  ? 'border-[#00CED1]/20 bg-[#008B8B]/10 text-[#00CED1] hover:bg-[#008B8B]/20'
+                  : 'border-[#008B8B]/25 bg-[#008B8B]/10 text-[#006666] hover:bg-[#008B8B]/15'
+              }`}
+              aria-label="Toggle theme"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={isDark ? 'moon' : 'sun'}
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="flex items-center justify-center"
+                >
+                  {isDark ? <Sun size={15} /> : <Moon size={15} />}
+                </motion.div>
+              </AnimatePresence>
+            </button>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className={`p-2 rounded-lg border md:hidden transition-all duration-300 ${
+                dark
+                  ? 'border-[#00CED1]/20 bg-[#008B8B]/10 text-[#00CED1] hover:bg-[#008B8B]/20'
+                  : 'border-[#008B8B]/25 bg-[#008B8B]/10 text-[#006666] hover:bg-[#008B8B]/15'
+              }`}
+              aria-label="Toggle menu"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={mobileMenuOpen ? 'close' : 'menu'}
+                  initial={{ opacity: 0, rotate: -45 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={{ opacity: 0, rotate: 45 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex items-center justify-center"
+                >
+                  {mobileMenuOpen ? <X size={15} /> : <Menu size={15} />}
+                </motion.div>
+              </AnimatePresence>
+            </button>
+          </div>
         </div>
       </nav>
+
+      {/* Mobile Menu Dropdown */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+            className={`fixed top-14 left-0 right-0 z-40 md:hidden ${navBg} backdrop-blur-md border-b ${
+              dark ? 'border-[#00CED1]/10' : 'border-[#008B8B]/10'
+            } px-4 py-4 flex flex-col gap-3 shadow-lg`}
+          >
+            {navLinks.map((link) => (
+              <button
+                key={link.id}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  scrollTo(link.id);
+                }}
+                className={`py-2 px-3 text-left text-sm font-semibold uppercase tracking-widest rounded-lg transition-all ${
+                  activeSection === link.id
+                    ? 'text-[#00CED1] bg-[#008B8B]/10'
+                    : dark ? 'text-[#7fb3b3] hover:text-[#00CED1] hover:bg-[#008B8B]/5' : 'text-[#2a6060] hover:text-[#008B8B] hover:bg-[#008B8B]/5'
+                }`}
+              >
+                {link.label}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Content ─────────────────────────────────────────────────────────── */}
       <div className="relative z-10 pt-14">
@@ -424,12 +487,16 @@ export const SimplePage = ({ onBack }: SimplePageProps) => {
             animate="visible"
             variants={{ visible: { transition: { staggerChildren: 0.15 } } }}
           >
-            <motion.div variants={fadeUp} className="w-20 h-20 rounded-2xl border border-[#00CED1]/30 bg-[#008B8B]/10 backdrop-blur-sm flex items-center justify-center text-3xl font-black text-[#00CED1] shadow-[0_0_40px_rgba(0,206,209,0.2)]">
+            <motion.div
+              variants={fadeUp}
+              whileHover={{ scale: 1.08, boxShadow: '0 0 50px rgba(0,206,209,0.3)' }}
+              className="w-20 h-20 rounded-2xl border border-[#00CED1]/30 bg-[#008B8B]/10 backdrop-blur-sm flex items-center justify-center text-3xl font-black text-[#00CED1] shadow-[0_0_40px_rgba(0,206,209,0.2)] cursor-pointer"
+            >
               DS
             </motion.div>
 
             <motion.h1 variants={fadeUp} className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight">
-              <span className="text-white">Deep</span>{' '}
+              <span className={dark ? 'text-white' : 'text-[#0a2a2a]'}>Deep</span>{' '}
               <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #00CED1, #008B8B, #20B2AA)' }}>
                 Shah
               </span>
@@ -479,7 +546,7 @@ export const SimplePage = ({ onBack }: SimplePageProps) => {
 
           {/* Scroll hint */}
           <motion.div
-            className={`absolute bottom-10 flex flex-col items-center gap-2 ${textMuted} opacity-50`}
+            className={`absolute bottom-10 right-4 sm:right-8 lg:right-12 flex flex-col items-center gap-2 ${textMuted} opacity-50`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             transition={{ delay: 2 }}
@@ -743,11 +810,11 @@ export const SimplePage = ({ onBack }: SimplePageProps) => {
         </section>
 
         {/* ── Footer ── */}
-        <footer className={`py-8 text-center border-t ${dark ? 'border-[#00CED1]/10' : 'border-[#008B8B]/10'}`}>
+        <footer className={`relative py-8 text-center border-t ${dark ? 'border-[#00CED1]/10' : 'border-[#008B8B]/10'} max-w-6xl mx-auto px-4 sm:px-8`}>
           <p className={`text-xs ${textMuted} tracking-widest`}>
             Built by <span className="text-[#008B8B] font-bold">Deep Shah</span> · 2026
           </p>
-          <p className="text-[9px] text-[#008B8B]/30 mt-2 tracking-widest uppercase">
+          <p className="text-[9px] text-[#008B8B]/30 tracking-widest uppercase sm:absolute sm:right-8 sm:top-1/2 sm:-translate-y-1/2 mt-2 sm:mt-0">
             scroll down to loop back
           </p>
         </footer>

@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import type { Variants } from 'framer-motion';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sun, Moon } from 'lucide-react';
 
 type View = 'landing' | 'simple' | 'obsidian';
 
 interface LandingPageProps {
   onSelect: (view: View) => void;
+  isDark: boolean;
+  onToggleDark: () => void;
 }
 
 const containerVariants: Variants = {
@@ -33,7 +36,7 @@ interface PortalCard {
   subtitle: string;
   description: string;
   tag: string;
-  tagColor: string;
+  tagColor: 'teal' | 'purple' | 'amber';
   disabled?: boolean;
   comingSoon?: boolean;
 }
@@ -46,7 +49,7 @@ const cards: PortalCard[] = [
     subtitle: 'Clean & Accessible',
     description: 'A crisp, easy-to-navigate overview built for everyone - recruiters, HRs, and curious minds.',
     tag: 'HR Friendly',
-    tagColor: 'bg-teal-500/20 text-teal-300 border-teal-500/30',
+    tagColor: 'teal',
   },
   {
     id: 'obsidian',
@@ -55,7 +58,7 @@ const cards: PortalCard[] = [
     subtitle: 'Obsidian-Style Vault',
     description: 'A full technical knowledge vault with graph view, markdown notes, and the complete deep-dive.',
     tag: 'Tech Savvy',
-    tagColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+    tagColor: 'purple',
   },
   {
     id: 'anime',
@@ -64,13 +67,29 @@ const cards: PortalCard[] = [
     subtitle: 'The Extraordinary One',
     description: 'Floating menus, dome gallery, pixel transitions, SVGator animations - the full creative experience.',
     tag: 'Coming Soon',
-    tagColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+    tagColor: 'amber',
     disabled: true,
     comingSoon: true,
   },
 ];
 
-export const LandingPage = ({ onSelect }: LandingPageProps) => {
+const getTagColor = (color: 'teal' | 'purple' | 'amber', isDark: boolean) => {
+  if (color === 'teal') {
+    return isDark
+      ? 'bg-teal-500/20 text-teal-300 border-teal-500/30'
+      : 'bg-teal-600/10 text-teal-700 border-teal-600/20';
+  }
+  if (color === 'purple') {
+    return isDark
+      ? 'bg-purple-500/20 text-purple-300 border-purple-500/30'
+      : 'bg-purple-600/10 text-purple-700 border-purple-600/20';
+  }
+  return isDark
+    ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+    : 'bg-amber-600/10 text-amber-700 border-amber-600/20';
+};
+
+export const LandingPage = ({ onSelect, isDark, onToggleDark }: LandingPageProps) => {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   const handleCardClick = (card: PortalCard) => {
@@ -78,18 +97,56 @@ export const LandingPage = ({ onSelect }: LandingPageProps) => {
     onSelect(card.id as View);
   };
 
+  const dark = isDark;
+  const bg = dark
+    ? 'bg-gradient-to-tr from-[#030d14] via-[#0a1628] to-[#041a1a]'
+    : 'bg-gradient-to-tr from-[#f0fafa] via-[#e6f7f7] to-[#f5ffff]';
+  const textPrimary = dark ? 'text-white' : 'text-[#0a2a2a]';
+  const textMuted   = dark ? 'text-[#7fb3b3]' : 'text-[#2a6060]';
+  const textMuted2  = dark ? 'text-[#4a8080]' : 'text-[#2a6060]/75';
+
   return (
-    <div className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-[#030d14]">
+    <div className={`relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden transition-colors duration-300 ${bg}`}>
+      {/* Theme Toggle */}
+      <button
+        onClick={onToggleDark}
+        className={`fixed top-4 right-4 z-50 p-2.5 rounded-xl border backdrop-blur-md shadow-lg hover:scale-105 active:scale-95 transition-all duration-300 ${
+          dark
+            ? 'border-[#00CED1]/25 bg-[#030d14]/80 text-[#00CED1] hover:border-[#00CED1]/50 hover:shadow-[#00CED1]/5'
+            : 'border-[#008B8B]/20 bg-white/80 text-[#008B8B] hover:border-[#008B8B]/40 hover:shadow-[#008B8B]/5'
+        }`}
+        title={dark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={dark ? 'moon' : 'sun'}
+            initial={{ rotate: -90, opacity: 0 }}
+            animate={{ rotate: 0, opacity: 1 }}
+            exit={{ rotate: 90, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            {dark ? <Sun size={15} /> : <Moon size={15} />}
+          </motion.div>
+        </AnimatePresence>
+      </button>
+
       {/* Animated ambient background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-[#008B8B]/10 blur-[120px] animate-pulse" style={{ animationDuration: '4s' }} />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-[#00CED1]/8 blur-[100px] animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }} />
-        <div className="absolute top-[40%] left-[50%] w-[300px] h-[300px] rounded-full bg-[#20B2AA]/5 blur-[80px] animate-pulse" style={{ animationDuration: '5s', animationDelay: '2s' }} />
+        {dark && (
+          <>
+            <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-[#008B8B]/10 blur-[120px] animate-pulse" style={{ animationDuration: '4s' }} />
+            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-[#00CED1]/8 blur-[100px] animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }} />
+            <div className="absolute top-[40%] left-[50%] w-[300px] h-[300px] rounded-full bg-[#20B2AA]/5 blur-[80px] animate-pulse" style={{ animationDuration: '5s', animationDelay: '2s' }} />
+          </>
+        )}
         {/* Grid overlay */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0"
           style={{
-            backgroundImage: `linear-gradient(rgba(0,206,209,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,206,209,1) 1px, transparent 1px)`,
+            opacity: dark ? 0.03 : 0.06,
+            backgroundImage: dark
+              ? `linear-gradient(rgba(0,206,209,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,206,209,1) 1px, transparent 1px)`
+              : `linear-gradient(rgba(0,139,139,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,139,139,1) 1px, transparent 1px)`,
             backgroundSize: '60px 60px',
           }}
         />
@@ -103,15 +160,7 @@ export const LandingPage = ({ onSelect }: LandingPageProps) => {
           initial="hidden"
           animate="visible"
         >
-          {/* Monogram badge */}
-          <motion.div
-            className="w-16 h-16 rounded-2xl border border-[#00CED1]/30 bg-[#008B8B]/10 backdrop-blur-sm flex items-center justify-center text-2xl font-black text-[#00CED1] shadow-[0_0_30px_rgba(0,206,209,0.15)] mb-2"
-            whileHover={{ scale: 1.08, boxShadow: '0 0 50px rgba(0,206,209,0.3)' }}
-          >
-            DS
-          </motion.div>
-
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white">
+          <h1 className={`text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight ${textPrimary}`}>
             Deep{' '}
             <span
               className="text-transparent bg-clip-text"
@@ -121,11 +170,11 @@ export const LandingPage = ({ onSelect }: LandingPageProps) => {
             </span>
           </h1>
 
-          <p className="text-[#7fb3b3] text-base sm:text-lg font-medium tracking-widest uppercase">
+          <p className={`${textMuted} text-base sm:text-lg font-medium tracking-widest uppercase`}>
             AI / ML Engineer &nbsp;·&nbsp; Builder &nbsp;·&nbsp; Automator
           </p>
 
-          <p className="text-[#4a8080] text-sm max-w-md text-center leading-relaxed mt-2">
+          <p className={`${textMuted2} text-sm max-w-md text-center leading-relaxed mt-2`}>
             Choose how you'd like to explore - a clean overview or a full deep-dive into the technical vault.
           </p>
         </motion.div>
@@ -152,15 +201,21 @@ export const LandingPage = ({ onSelect }: LandingPageProps) => {
                 className={`
                   relative group rounded-2xl border p-8 flex flex-col gap-5 transition-all duration-300
                   ${card.disabled
-                    ? 'opacity-55 cursor-not-allowed border-white/10 bg-white/[0.02]'
-                    : 'cursor-pointer border-[#00CED1]/15 bg-[#008B8B]/[0.04] hover:border-[#00CED1]/40 hover:bg-[#008B8B]/[0.08]'
+                    ? (dark ? 'opacity-55 cursor-not-allowed border-white/10 bg-white/[0.02]' : 'opacity-55 cursor-not-allowed border-black/10 bg-black/[0.01]')
+                    : (dark 
+                        ? 'cursor-pointer border-[#00CED1]/15 bg-[#008B8B]/[0.04] hover:border-[#00CED1]/40 hover:bg-[#008B8B]/[0.08]' 
+                        : 'cursor-pointer border-[#008B8B]/20 bg-white/70 hover:border-[#008B8B]/40 hover:bg-[#008B8B]/[0.05]')
                   }
                 `}
                 style={{
                   backdropFilter: 'blur(12px)',
                   boxShadow: !card.disabled && isHovered
-                    ? '0 0 60px rgba(0,139,139,0.15), inset 0 1px 0 rgba(0,206,209,0.1)'
-                    : 'inset 0 1px 0 rgba(255,255,255,0.03)',
+                    ? (dark
+                        ? '0 0 60px rgba(0,139,139,0.15), inset 0 1px 0 rgba(0,206,209,0.1)'
+                        : '0 0 60px rgba(0,139,139,0.08), inset 0 1px 0 rgba(255,255,255,0.8)')
+                    : (dark
+                        ? 'inset 0 1px 0 rgba(255,255,255,0.03)'
+                        : 'inset 0 1px 0 rgba(255,255,255,0.5)'),
                 }}
               >
                 {/* Coming soon badge */}
@@ -175,20 +230,20 @@ export const LandingPage = ({ onSelect }: LandingPageProps) => {
 
                 {/* Text */}
                 <div className="flex flex-col gap-2 flex-1">
-                  <h2 className="text-xl font-bold text-white group-hover:text-[#00CED1] transition-colors duration-300">
+                  <h2 className={`text-xl font-bold ${textPrimary} group-hover:text-[#00CED1] transition-colors duration-300`}>
                     {card.title}
                   </h2>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-[#4a8080]">
+                  <p className={`text-xs font-semibold uppercase tracking-widest ${textMuted2}`}>
                     {card.subtitle}
                   </p>
-                  <p className="text-sm text-[#7fb3b3] leading-relaxed mt-1">
+                  <p className={`text-sm ${textMuted} leading-relaxed mt-1`}>
                     {card.description}
                   </p>
                 </div>
 
                 {/* Tag + Arrow */}
                 <div className="flex items-center justify-between mt-2">
-                  <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${card.tagColor}`}>
+                  <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${getTagColor(card.tagColor, dark)}`}>
                     {card.tag}
                   </span>
                   {!card.disabled && (
@@ -218,7 +273,7 @@ export const LandingPage = ({ onSelect }: LandingPageProps) => {
 
         {/* Footer hint */}
         <motion.p
-          className="text-[#2a5050] text-xs tracking-widest uppercase"
+          className={`${textMuted2} text-xs tracking-widest uppercase`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.8 }}
