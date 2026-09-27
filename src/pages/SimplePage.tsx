@@ -339,12 +339,13 @@ export const SimplePage = ({ onBack, isDark, onToggleDark }: SimplePageProps) =>
   const navBg       = dark ? 'bg-[#030d14]/80 border-b border-[#00CED1]/10' : 'bg-white/70 border-b border-[#008B8B]/15';
   const tagBg       = dark ? 'bg-[#008B8B]/15 text-[#00CED1] border border-[#00CED1]/20' : 'bg-[#008B8B]/10 text-[#006666] border border-[#008B8B]/25';
 
-  const navLinks = [
+  const navLinks: { id?: string; href?: string; label: string }[] = [
     { id: 'about',      label: 'About'      },
     { id: 'skills',     label: 'Skills'     },
     { id: 'projects',   label: 'Projects'   },
     { id: 'experience', label: 'Experience' },
     { id: 'contact',    label: 'Contact'    },
+    { href: 'https://drive.google.com/file/d/1tx6p7-VzFk-XmhBMFt7OJOutzWE67KTQ/view', label: 'Resume' },
   ];
 
   const scrollTo = (id: string) => {
@@ -376,19 +377,37 @@ export const SimplePage = ({ onBack, isDark, onToggleDark }: SimplePageProps) =>
 
           {/* Nav links (Desktop) */}
           <div className="hidden md:flex items-center gap-6">
-            {navLinks.map((link) => (
-              <button
-                key={link.id}
-                onClick={() => scrollTo(link.id)}
-                className={`text-xs font-semibold uppercase tracking-widest transition-colors ${
-                  activeSection === link.id
-                    ? 'text-[#00CED1]'
-                    : dark ? 'text-[#7fb3b3] hover:text-[#00CED1]' : 'text-[#2a6060] hover:text-[#008B8B]'
-                }`}
-              >
-                {link.label}
-              </button>
-            ))}
+            {navLinks.map((link) => {
+              const commonClasses = `text-xs font-semibold uppercase tracking-widest transition-colors ${
+                link.id && activeSection === link.id
+                  ? 'text-[#00CED1]'
+                  : dark ? 'text-[#7fb3b3] hover:text-[#00CED1]' : 'text-[#2a6060] hover:text-[#008B8B]'
+              }`;
+
+              if (link.href) {
+                return (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={commonClasses}
+                  >
+                    {link.label}
+                  </a>
+                );
+              }
+
+              return (
+                <button
+                  key={link.id}
+                  onClick={() => scrollTo(link.id!)}
+                  className={commonClasses}
+                >
+                  {link.label}
+                </button>
+              );
+            })}
           </div>
 
           {/* Controls right */}
@@ -456,22 +475,41 @@ export const SimplePage = ({ onBack, isDark, onToggleDark }: SimplePageProps) =>
               dark ? 'border-[#00CED1]/10' : 'border-[#008B8B]/10'
             } px-4 py-4 flex flex-col gap-3 shadow-lg`}
           >
-            {navLinks.map((link) => (
-              <button
-                key={link.id}
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  scrollTo(link.id);
-                }}
-                className={`py-2 px-3 text-left text-sm font-semibold uppercase tracking-widest rounded-lg transition-all ${
-                  activeSection === link.id
-                    ? 'text-[#00CED1] bg-[#008B8B]/10'
-                    : dark ? 'text-[#7fb3b3] hover:text-[#00CED1] hover:bg-[#008B8B]/5' : 'text-[#2a6060] hover:text-[#008B8B] hover:bg-[#008B8B]/5'
-                }`}
-              >
-                {link.label}
-              </button>
-            ))}
+            {navLinks.map((link) => {
+              const mobileClasses = `py-2 px-3 text-left text-sm font-semibold uppercase tracking-widest rounded-lg transition-all ${
+                link.id && activeSection === link.id
+                  ? 'text-[#00CED1] bg-[#008B8B]/10'
+                  : dark ? 'text-[#7fb3b3] hover:text-[#00CED1] hover:bg-[#008B8B]/5' : 'text-[#2a6060] hover:text-[#008B8B] hover:bg-[#008B8B]/5'
+              }`;
+
+              if (link.href) {
+                return (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={mobileClasses}
+                  >
+                    {link.label}
+                  </a>
+                );
+              }
+
+              return (
+                <button
+                  key={link.id}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    scrollTo(link.id!);
+                  }}
+                  className={mobileClasses}
+                >
+                  {link.label}
+                </button>
+              );
+            })}
           </motion.div>
         )}
       </AnimatePresence>
