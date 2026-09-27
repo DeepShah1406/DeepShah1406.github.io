@@ -1,5 +1,8 @@
 # Resume Snapshot
 
+> [!INFO]
+> 📄 **Looking for the complete PDF version?** [View / Download Deep Shah's Resume (PDF)](https://drive.google.com/file/d/1tx6p7-VzFk-XmhBMFt7OJOutzWE67KTQ/view)
+
 ## Professional Summary
 Results-oriented AI/ML Engineer with a Master’s in Information Technology and specialized expertise in **Generative AI (RAG)**, **n8n Automation**, and **Computer Vision**. Proven track record of architecting scalable chatbot solutions and optimizing workflow efficiency by over 25%.
 
@@ -17,4 +20,4 @@ Results-oriented AI/ML Engineer with a Master’s in Information Technology and 
   Sardar Patel University
 
 ---
-[[Experience_Log]] | [[Impact_Record]]
+[📄 View / Download Official Resume (PDF)](https://drive.google.com/file/d/1tx6p7-VzFk-XmhBMFt7OJOutzWE67KTQ/view) • [[Experience_Log]] • [[Impact_Record]]
