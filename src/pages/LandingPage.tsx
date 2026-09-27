@@ -68,8 +68,8 @@ const cards: PortalCard[] = [
     description: 'Floating menus, dome gallery, pixel transitions, SVGator animations - the full creative experience.',
     tag: 'Interactive',
     tagColor: 'amber',
-    disabled: false,
-    comingSoon: false,
+    disabled: true,
+    comingSoon: true,
   },
 ];
 
