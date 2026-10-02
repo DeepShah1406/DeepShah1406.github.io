@@ -147,8 +147,8 @@ export const ProgressBarLoadingScreen = ({ onComplete }: ProgressBarLoadingScree
       </div>
 
       {/* URL Footer */}
-      <p className="absolute bottom-10 text-[10px] font-bold uppercase tracking-[0.35em] text-[#008B8B]/40 select-none pointer-events-none">
-        deepshah1406.github.io
+      <p className="absolute bottom-10 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.18em] sm:tracking-[0.28em] text-[#008B8B]/40 select-none pointer-events-none text-center px-4">
+        shahdeep.tech | deepshah1406.github.io | deepshah1406.me
       </p>
     </div>
   );

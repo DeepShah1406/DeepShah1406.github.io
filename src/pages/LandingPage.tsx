@@ -273,12 +273,12 @@ export const LandingPage = ({ onSelect, isDark, onToggleDark }: LandingPageProps
 
         {/* Footer hint */}
         <motion.p
-          className={`${textMuted2} text-xs tracking-widest uppercase`}
+          className={`${textMuted2} text-[10px] sm:text-xs tracking-widest uppercase text-center px-4`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.8 }}
         >
-          deepshah1406.github.io
+          shahdeep.tech | deepshah1406.github.io | deepshah1406.me
         </motion.p>
       </div>
     </div>
