@@ -87,12 +87,15 @@ export const NoteViewer: React.FC<NoteViewerProps> = ({ content }) => {
           },
           // Custom image renderer
           img: ({ src, alt, ...props }) => {
-            if (alt === 'PROFILE') {
+            const isProfile = alt === 'PROFILE' || alt?.toLowerCase().includes('deep shah') || src?.includes('Deep_Shah_Image');
+            if (isProfile) {
               return (
                 <div className="float-none sm:float-right mx-auto sm:ml-8 mb-8 sm:mb-4 group relative w-max">
                   <img 
                     src={src} 
-                    alt={alt}
+                    alt={alt || "Deep Shah - AI/ML Engineer & Automation Architect"}
+                    loading="lazy"
+                    decoding="async"
                     className="w-32 sm:w-48 h-auto rounded-xl shadow-2xl filter grayscale contrast-125 brightness-90 group-hover:grayscale-0 group-hover:brightness-100 group-hover:contrast-100 transition-all duration-700 ease-in-out border border-obsidian-border group-hover:border-obsidian-accent"
                     {...props}
                   />
@@ -100,7 +103,7 @@ export const NoteViewer: React.FC<NoteViewerProps> = ({ content }) => {
                 </div>
               );
             }
-            return <img src={src} alt={alt} className="rounded-lg border border-obsidian-border my-8 mx-auto w-full max-w-full" {...props} />;
+            return <img src={src} alt={alt || "Portfolio image"} loading="lazy" decoding="async" className="rounded-lg border border-obsidian-border my-8 mx-auto w-full max-w-full" {...props} />;
           },
           // Custom link for Wiki-links and external links
           a: ({ href, children }) => {

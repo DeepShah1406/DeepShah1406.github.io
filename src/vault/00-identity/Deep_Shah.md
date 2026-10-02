@@ -1,6 +1,6 @@
 # Deep Shah
 
-![PROFILE](/Deep_Shah_Image.jpg)
+![Deep Shah - AI/ML Engineer & Automation Architect](/Deep_Shah_Image.webp)
 
 > [!ACHIEVEMENT]
 > **Deep Ashishkumar Shah**
