@@ -170,8 +170,8 @@ export const LandingPage = ({ onSelect, isDark, onToggleDark }: LandingPageProps
             </span>
           </h1>
 
-          <p className={`${textMuted} text-base sm:text-lg font-medium tracking-widest uppercase`}>
-            AI / ML Engineer &nbsp;·&nbsp; Builder &nbsp;·&nbsp; Automator
+          <p className={`${textMuted} text-xs sm:text-sm md:text-base font-medium tracking-wider sm:tracking-widest uppercase text-center px-2`}>
+            AI / ML Engineer &nbsp;·&nbsp; GenAI &amp; RAG Specialist &nbsp;·&nbsp; Automation Architect
           </p>
 
           <p className={`${textMuted2} text-sm max-w-md text-center leading-relaxed mt-2`}>
